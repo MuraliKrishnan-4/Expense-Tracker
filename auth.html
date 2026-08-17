@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Expense Tracker - Login
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="auth.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="page-container">
+
+
+    <div class="auth-container">
+
+
+        <!-- ========================================
+             LOGIN SECTION
+        ========================================= -->
+
+        <div
+            class="auth-box"
+            id="loginBox"
+        >
+
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+
+                <div class="money-icon">
+
+                    💰
+
+                </div>
+
+
+                <h1>
+
+                    Expense Tracker
+
+                </h1>
+
+
+                <p>
+
+                    Manage your money smarter
+
+                </p>
+
+
+            </div>
+
+
+            <!-- LOGIN TITLE -->
+
+            <h2>
+
+                Welcome Back
+
+            </h2>
+
+
+            <p class="subtitle">
+
+                Login to access your expenses
+
+            </p>
+
+
+            <!-- ========================================
+                 LOGIN FORM
+            ========================================= -->
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+
+                <!-- EMAIL -->
+
+                <label
+                    for="loginEmail"
+                >
+
+                    Email
+
+                </label>
+
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+
+                <!-- PASSWORD -->
+
+                <label
+                    for="loginPassword"
+                >
+
+                    Password
+
+                </label>
+
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    id="loginButton"
+                >
+
+                    Login
+
+                </button>
+
+
+            </form>
+
+
+            <!-- SWITCH TO SIGNUP -->
+
+            <p class="switch-text">
+
+
+                Don't have an account?
+
+
+                <a
+                    href="#"
+                    id="showSignup"
+                >
+
+                    Create Account
+
+                </a>
+
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- ========================================
+             SIGNUP SECTION
+        ========================================= -->
+
+        <div
+            class="auth-box hidden"
+            id="signupBox"
+        >
+
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+
+                <div class="money-icon">
+
+                    💰
+
+                </div>
+
+
+                <h1>
+
+                    Expense Tracker
+
+                </h1>
+
+
+                <p>
+
+                    Manage your money smarter
+
+                </p>
+
+
+            </div>
+
+
+            <!-- SIGNUP TITLE -->
+
+            <h2>
+
+                Create Account
+
+            </h2>
+
+
+            <p class="subtitle">
+
+                Start tracking your income and expenses
+
+            </p>
+
+
+            <!-- ========================================
+                 SIGNUP FORM
+            ========================================= -->
+
+            <form
+                id="signupForm"
+                autocomplete="on"
+            >
+
+
+                <!-- FULL NAME -->
+
+                <label
+                    for="signupName"
+                >
+
+                    Full Name
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="signupName"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                >
+
+
+                <!-- EMAIL -->
+
+                <label
+                    for="signupEmail"
+                >
+
+                    Email
+
+                </label>
+
+
+                <input
+                    type="email"
+                    id="signupEmail"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+
+                <!-- PASSWORD -->
+
+                <label
+                    for="signupPassword"
+                >
+
+                    Password
+
+                </label>
+
+
+                <input
+                    type="password"
+                    id="signupPassword"
+                    name="password"
+                    placeholder="Minimum 6 characters"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+
+                <!-- CREATE ACCOUNT BUTTON -->
+
+                <button
+                    type="submit"
+                    id="signupButton"
+                >
+
+                    Create Account
+
+                </button>
+
+
+            </form>
+
+
+            <!-- SWITCH TO LOGIN -->
+
+            <p class="switch-text">
+
+
+                Already have an account?
+
+
+                <a
+                    href="#"
+                    id="showLogin"
+                >
+
+                    Login
+
+                </a>
+
+
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================
+     JAVASCRIPT FILES
+========================================= -->
+
+
+<script
+    src="supabase.js"
+></script>
+
+
+<script
+    src="auth.js"
+></script>
+
+
+</body>
+
+</html>

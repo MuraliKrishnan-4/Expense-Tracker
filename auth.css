@@ -1,0 +1,242 @@
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e9eef5,
+            #cfd8e6
+        );
+
+    min-height: 100vh;
+
+}
+
+
+.page-container {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+}
+
+
+.auth-container {
+
+    width: 100%;
+
+    max-width: 450px;
+
+}
+
+
+.auth-box {
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0, 0, 0, 0.15);
+
+}
+
+
+.hidden {
+
+    display: none;
+
+}
+
+
+.logo {
+
+    text-align: center;
+
+    margin-bottom: 35px;
+
+}
+
+
+.money-icon {
+
+    font-size: 35px;
+
+}
+
+
+.logo h1 {
+
+    color: #24364b;
+
+    margin-top: 10px;
+
+    font-size: 28px;
+
+}
+
+
+.logo p {
+
+    margin-top: 8px;
+
+    color: #6b7280;
+
+}
+
+
+h2 {
+
+    color: #26384d;
+
+    margin-bottom: 8px;
+
+}
+
+
+.subtitle {
+
+    color: #6b7280;
+
+    margin-bottom: 25px;
+
+}
+
+
+label {
+
+    display: block;
+
+    font-weight: bold;
+
+    color: #344054;
+
+    margin-bottom: 8px;
+
+    margin-top: 18px;
+
+}
+
+
+input {
+
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid #cbd5e1;
+
+    font-size: 15px;
+
+}
+
+
+input:focus {
+
+    outline: none;
+
+    border-color: #16a085;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(22, 160, 133, 0.15);
+
+}
+
+
+button {
+
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #16a085;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+button:hover {
+
+    background: #12876f;
+
+}
+
+
+button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
+.switch-text {
+
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #64748b;
+
+}
+
+
+.switch-text a {
+
+    color: #16a085;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+}
+
+
+@media (max-width: 500px) {
+
+    .auth-box {
+
+        padding: 25px;
+
+    }
+
+}
