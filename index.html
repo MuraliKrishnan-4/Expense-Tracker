@@ -11,7 +11,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Expense Tracker</title>
+    <title>
+        Expense Tracker
+    </title>
 
     <link
         rel="stylesheet"
@@ -24,7 +26,9 @@
 <body>
 
 
-<!-- HEADER -->
+<!-- ========================================
+     HEADER
+========================================= -->
 
 <header>
 
@@ -34,22 +38,26 @@
 
         <div class="brand">
 
+
             <div class="brand-icon">
+
                 💰
+
             </div>
 
 
             <div>
 
                 <h1>
+
                     Expense Tracker
+
                 </h1>
 
 
                 <p>
 
-                    Track your income,
-                    expenses and savings
+                    Track your income, expenses and savings
 
                 </p>
 
@@ -66,7 +74,9 @@
     <div class="header-right">
 
 
-        <!-- PROFILE -->
+        <!-- ========================================
+             PROFILE
+        ========================================= -->
 
         <div class="profile-container">
 
@@ -122,6 +132,8 @@
         </div>
 
 
+        <!-- LOGOUT -->
+
         <button
             id="logoutBtn"
             class="logout-btn"
@@ -143,7 +155,9 @@
 <main>
 
 
-    <!-- BALANCE -->
+    <!-- ========================================
+         BALANCE
+    ========================================= -->
 
     <section
         class="balance-card"
@@ -175,7 +189,9 @@
 
 
 
-    <!-- SUMMARY -->
+    <!-- ========================================
+         SUMMARY
+    ========================================= -->
 
     <section
         class="summary"
@@ -231,7 +247,114 @@
 
 
 
-    <!-- ADD TRANSACTION -->
+    <!-- ========================================
+         EXPENSE CHART
+    ========================================= -->
+
+    <section
+        class="chart-card"
+    >
+
+
+        <div class="chart-header">
+
+
+            <div>
+
+
+                <h2>
+
+                    Expense Chart
+
+                </h2>
+
+
+                <p>
+
+                    See where your money is going
+
+                </p>
+
+
+            </div>
+
+
+            <div
+                id="chartTotal"
+                class="chart-total"
+            >
+
+                ₹0.00
+
+            </div>
+
+
+        </div>
+
+
+        <div class="chart-content">
+
+
+            <div class="chart-wrapper">
+
+
+                <canvas
+                    id="expenseChart"
+                ></canvas>
+
+
+                <div
+                    id="chartCenter"
+                    class="chart-center"
+                >
+
+
+                    <strong>
+
+                        ₹0.00
+
+                    </strong>
+
+
+                    <span>
+
+                        Total Expense
+
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="chartLegend"
+                class="chart-legend"
+            ></div>
+
+
+        </div>
+
+
+        <div
+            id="chartEmpty"
+            class="chart-empty"
+        >
+
+            Add expenses to see your chart.
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ========================================
+         ADD TRANSACTION
+    ========================================= -->
 
     <section
         class="form-card"
@@ -319,50 +442,124 @@
 
                 </div>
 
+
+
+                <!-- CATEGORY -->
+
                 <div>
-    <label>Category</label>
-
-    <select id="category" required>
-
-        <option value="">
-            Select Category
-        </option>
-
-        <option value="Food">Food</option>
-        <option value="Travel">Travel</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Bills">Bills</option>
-        <option value="Salary">Salary</option>
-        <option value="Freelance">Freelance</option>
-        <option value="Investment">Investment</option>
-
-        <option value="Other">Other</option>
-
-    </select>
-</div>
 
 
-            <!-- CUSTOM CATEGORY -->
-            <div
-            id="customCategoryBox"
-            class="custom-category hidden"
-            >
+                    <label
+                        for="category"
+                    >
 
-            <label for="customCategory">
-            Enter Category
-            </label>
+                        Category
 
-            <input
-            type="text"
-            id="customCategory"
-            placeholder="Example: Medical, Education, Rent"
-            >
+                    </label>
+
+
+                    <select
+                        id="category"
+                        required
+                    >
+
+
+                        <option value="">
+
+                            Select Category
+
+                        </option>
+
+
+                        <option value="Food">
+
+                            Food
+
+                        </option>
+
+
+                        <option value="Travel">
+
+                            Travel
+
+                        </option>
+
+
+                        <option value="Shopping">
+
+                            Shopping
+
+                        </option>
+
+
+                        <option value="Bills">
+
+                            Bills
+
+                        </option>
+
+
+                        <option value="Salary">
+
+                            Salary
+
+                        </option>
+
+
+                        <option value="Freelance">
+
+                            Freelance
+
+                        </option>
+
+
+                        <option value="Investment">
+
+                            Investment
+
+                        </option>
+
+
+                        <option value="Other">
+
+                            Other
+
+                        </option>
+
+
+                    </select>
+
 
                 </div>
 
 
 
+                <!-- CUSTOM CATEGORY -->
 
+                <div
+                    id="customCategoryBox"
+                    class="custom-category hidden"
+                >
+
+
+                    <label
+                        for="customCategory"
+                    >
+
+                        Enter Category
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="customCategory"
+                        placeholder="Example: Medical, Education, Rent"
+                        autocomplete="off"
+                    >
+
+
+                </div>
 
 
 
@@ -439,6 +636,7 @@
             <button
                 type="submit"
                 class="add-btn"
+                id="addTransactionBtn"
             >
 
                 Add Transaction
@@ -453,7 +651,9 @@
 
 
 
-    <!-- TRANSACTIONS -->
+    <!-- ========================================
+         TRANSACTIONS
+    ========================================= -->
 
     <section
         class="transaction-section"
@@ -532,33 +732,54 @@
 
                 <thead>
 
+
                     <tr>
 
+
                         <th>
+
                             Description
+
                         </th>
 
+
                         <th>
+
                             Category
+
                         </th>
 
+
                         <th>
+
                             Type
+
                         </th>
 
+
                         <th>
+
                             Date
+
                         </th>
 
+
                         <th>
+
                             Amount
+
                         </th>
 
+
                         <th>
+
                             Action
+
                         </th>
+
 
                     </tr>
+
 
                 </thead>
 
@@ -582,9 +803,32 @@
 </main>
 
 
-<script src="supabase.js"></script>
 
-<script src="script.js"></script>
+<!-- ========================================
+     CHART.JS
+========================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+></script>
+
+
+<!-- ========================================
+     SUPABASE
+========================================= -->
+
+<script
+    src="supabase.js"
+></script>
+
+
+<!-- ========================================
+     APPLICATION SCRIPT
+========================================= -->
+
+<script
+    src="script.js"
+></script>
 
 
 </body>

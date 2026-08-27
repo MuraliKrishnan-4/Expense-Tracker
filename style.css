@@ -20,7 +20,10 @@ body {
 }
 
 
-/* ================= HEADER ================= */
+
+/* ========================================
+   HEADER
+========================================= */
 
 header {
 
@@ -87,7 +90,10 @@ header {
 }
 
 
-/* ================= PROFILE ================= */
+
+/* ========================================
+   PROFILE
+========================================= */
 
 .profile-container {
 
@@ -223,7 +229,10 @@ header {
 }
 
 
-/* ================= LOGOUT ================= */
+
+/* ========================================
+   LOGOUT
+========================================= */
 
 .logout-btn {
 
@@ -251,7 +260,10 @@ header {
 }
 
 
-/* ================= MAIN ================= */
+
+/* ========================================
+   MAIN
+========================================= */
 
 main {
 
@@ -264,7 +276,10 @@ main {
 }
 
 
-/* ================= BALANCE ================= */
+
+/* ========================================
+   BALANCE
+========================================= */
 
 .balance-card {
 
@@ -306,7 +321,10 @@ main {
 }
 
 
-/* ================= SUMMARY ================= */
+
+/* ========================================
+   SUMMARY
+========================================= */
 
 .summary {
 
@@ -367,7 +385,238 @@ main {
 }
 
 
-/* ================= FORM ================= */
+
+/* ========================================
+   EXPENSE CHART
+========================================= */
+
+.chart-card {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 15px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.05);
+
+}
+
+
+.chart-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.chart-header h2 {
+
+    margin-bottom: 7px;
+
+}
+
+
+.chart-header p {
+
+    color: #64748b;
+
+}
+
+
+.chart-total {
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    color: #dc2626;
+
+}
+
+
+.chart-content {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 45px;
+
+}
+
+
+.chart-wrapper {
+
+    position: relative;
+
+    width: 300px;
+
+    height: 300px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+#expenseChart {
+
+    width: 300px !important;
+
+    height: 300px !important;
+
+}
+
+
+.chart-center {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+
+}
+
+
+.chart-center strong {
+
+    font-size: 20px;
+
+    color: #334155;
+
+}
+
+
+.chart-center span {
+
+    font-size: 12px;
+
+    color: #64748b;
+
+    margin-top: 4px;
+
+}
+
+
+.chart-legend {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 13px;
+
+    min-width: 200px;
+
+    max-height: 280px;
+
+    overflow-y: auto;
+
+}
+
+
+.chart-legend-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    font-size: 14px;
+
+}
+
+
+.chart-legend-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+.chart-legend-dot {
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+
+}
+
+
+.chart-legend-name {
+
+    color: #334155;
+
+}
+
+
+.chart-legend-value {
+
+    font-weight: bold;
+
+    color: #475569;
+
+}
+
+
+.chart-empty {
+
+    text-align: center;
+
+    padding: 25px;
+
+    color: #64748b;
+
+    display: none;
+
+}
+
+
+
+/* ========================================
+   FORM
+========================================= */
 
 .form-card {
 
@@ -502,7 +751,29 @@ select:focus {
 }
 
 
-/* ================= TRANSACTIONS ================= */
+
+/* ========================================
+   CUSTOM CATEGORY
+========================================= */
+
+.custom-category {
+
+    margin-top: 5px;
+
+}
+
+
+.hidden {
+
+    display: none !important;
+
+}
+
+
+
+/* ========================================
+   TRANSACTIONS
+========================================= */
 
 .transaction-section {
 
@@ -632,6 +903,13 @@ td {
 }
 
 
+.delete-btn:hover {
+
+    background: #fecaca;
+
+}
+
+
 .loading {
 
     text-align: center;
@@ -656,9 +934,13 @@ td {
 }
 
 
-/* ================= MOBILE ================= */
+
+/* ========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 700px) {
+
 
     header {
 
@@ -702,6 +984,58 @@ td {
     }
 
 
+    .chart-content {
+
+        flex-direction: column;
+
+        gap: 25px;
+
+    }
+
+
+    .chart-wrapper {
+
+        width: 260px;
+
+        height: 260px;
+
+    }
+
+
+    #expenseChart {
+
+        width: 260px !important;
+
+        height: 260px !important;
+
+    }
+
+
+    .chart-legend {
+
+        width: 100%;
+
+        max-height: 220px;
+
+    }
+
+
+    .chart-header {
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+
+    .chart-total {
+
+        font-size: 18px;
+
+    }
+
+
     .profile-menu {
 
         right: -60px;
@@ -712,6 +1046,7 @@ td {
 
 
 @media (max-width: 450px) {
+
 
     .logout-btn {
 
@@ -728,13 +1063,23 @@ td {
 
     }
 
-}
-/* ================= CUSTOM CATEGORY ================= */
 
-.custom-category {
-    margin-top: 5px;
-}
+    .chart-wrapper {
 
-.hidden {
-    display: none !important;
+        width: 230px;
+
+        height: 230px;
+
+    }
+
+
+    #expenseChart {
+
+        width: 230px !important;
+
+        height: 230px !important;
+
+    }
+
+
 }
