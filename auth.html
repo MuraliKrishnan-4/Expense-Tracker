@@ -14,7 +14,7 @@
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="auth.css"
     >
 
 </head>
@@ -23,243 +23,315 @@
 <body class="auth-page">
 
 
-<main class="auth-container">
+    <main class="auth-container">
 
-    <section class="auth-card">
-
-
-        <div class="app-logo">
-            💰
-        </div>
+        <section class="auth-card">
 
 
-        <h1>
-            Expense Tracker
-        </h1>
+            <!-- =========================
+                 APP BRAND
+            ========================== -->
 
-
-        <p class="app-subtitle">
-            Manage your money smarter
-        </p>
-
-
-
-        <!-- =========================
-             LOGIN
-        ========================== -->
-
-        <div id="loginSection">
-
-            <h2>
-                Welcome Back
-            </h2>
-
-            <p class="form-subtitle">
-                Login to manage your income and expenses
-            </p>
-
-
-            <label for="loginEmail">
-                Email
-            </label>
-
-            <input
-                id="loginEmail"
-                type="email"
-                placeholder="Enter your email"
-                autocomplete="email"
-            >
-
-
-
-            <label for="loginPassword">
-                Password
-            </label>
-
-
-            <div class="password-wrap">
-
-                <input
-                    id="loginPassword"
-                    type="password"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                >
-
-
-                <button
-                    type="button"
-                    class="show-password"
-                    id="loginPasswordToggle"
-                    aria-label="Show password"
-                    title="Show password"
-                >
-                    👁
-                </button>
-
+            <div class="app-logo">
+                💰
             </div>
 
 
-
-            <button
-                class="primary-btn"
-                id="loginBtn"
-                type="button"
-            >
-                Login
-            </button>
+            <h1 class="app-title">
+                Expense Tracker
+            </h1>
 
 
-            <div
-                id="loginMessage"
-                class="message"
-            ></div>
-
-
-
-            <p class="switch-text">
-
-                Don't have an account?
-
-                <button
-                    class="link-btn"
-                    id="showSignupBtn"
-                    type="button"
-                >
-                    Create Account
-                </button>
-
-            </p>
-
-        </div>
-
-
-
-        <!-- =========================
-             CREATE ACCOUNT
-        ========================== -->
-
-        <div
-            id="signupSection"
-            class="hidden"
-        >
-
-            <h2>
-                Create Account
-            </h2>
-
-            <p class="form-subtitle">
-                Start tracking your income and expenses
+            <p class="app-subtitle">
+                Manage your money smarter
             </p>
 
 
 
-            <label for="signupName">
-                Full Name
-            </label>
+            <!-- =========================
+                 LOGIN SECTION
+            ========================== -->
 
-            <input
-                id="signupName"
-                type="text"
-                placeholder="Enter your full name"
-                autocomplete="name"
-            >
+            <div id="loginSection">
 
 
+                <h2>
+                    Welcome Back
+                </h2>
 
-            <label for="signupEmail">
-                Email
-            </label>
 
-            <input
-                id="signupEmail"
-                type="email"
-                placeholder="Enter your email"
-                autocomplete="email"
-            >
+                <p class="form-subtitle">
+                    Login to manage your income and expenses
+                </p>
 
 
 
-            <label for="signupPassword">
-                Password
-            </label>
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="loginEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="loginEmail"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                    >
+
+                </div>
 
 
-            <div class="password-wrap">
 
-                <input
-                    id="signupPassword"
-                    type="password"
-                    placeholder="Minimum 6 characters"
-                    autocomplete="new-password"
-                >
+                <!-- PASSWORD -->
 
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+
+                    <div class="password-wrap">
+
+                        <input
+                            id="loginPassword"
+                            type="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                        >
+
+
+                        <!-- ONLY ONE EYE BUTTON -->
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="loginPasswordToggle"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
 
                 <button
-                    type="button"
-                    class="show-password"
-                    id="signupPasswordToggle"
-                    aria-label="Show password"
-                    title="Show password"
-                >
-                    👁
-                </button>
-
-            </div>
-
-
-
-            <button
-                class="primary-btn"
-                id="signupBtn"
-                type="button"
-            >
-                Create Account
-            </button>
-
-
-            <div
-                id="signupMessage"
-                class="message"
-            ></div>
-
-
-
-            <p class="switch-text">
-
-                Already have an account?
-
-                <button
-                    class="link-btn"
-                    id="showLoginBtn"
+                    class="primary-btn"
+                    id="loginBtn"
                     type="button"
                 >
                     Login
                 </button>
 
-            </p>
-
-        </div>
 
 
-    </section>
+                <!-- LOGIN MESSAGE -->
 
-</main>
-
-
-
-<!-- Supabase library -->
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
+                <div
+                    id="loginMessage"
+                    class="message"
+                    aria-live="polite"
+                ></div>
 
 
-<!-- Your Supabase configuration -->
-<script src="supabase.js"></script>
+
+                <!-- SWITCH TO SIGNUP -->
+
+                <p class="switch-text">
+
+                    Don't have an account?
+
+                    <button
+                        class="link-btn"
+                        id="showSignupBtn"
+                        type="button"
+                    >
+                        Create Account
+                    </button>
+
+                </p>
 
 
-<!-- Authentication code -->
-<script src="auth.js"></script>
+            </div>
+
+
+
+            <!-- =========================
+                 CREATE ACCOUNT SECTION
+            ========================== -->
+
+            <div
+                id="signupSection"
+                class="hidden"
+            >
+
+
+                <h2>
+                    Create Account
+                </h2>
+
+
+                <p class="form-subtitle">
+                    Start tracking your income and expenses
+                </p>
+
+
+
+                <!-- FULL NAME -->
+
+                <div class="form-group">
+
+                    <label for="signupName">
+                        Full Name
+                    </label>
+
+                    <input
+                        id="signupName"
+                        type="text"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                    >
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="signupEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="signupEmail"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="signupPassword">
+                        Password
+                    </label>
+
+
+                    <div class="password-wrap">
+
+                        <input
+                            id="signupPassword"
+                            type="password"
+                            placeholder="Minimum 6 characters"
+                            autocomplete="new-password"
+                        >
+
+
+                        <!-- ONLY ONE EYE BUTTON -->
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="signupPasswordToggle"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- CREATE ACCOUNT BUTTON -->
+
+                <button
+                    class="primary-btn"
+                    id="signupBtn"
+                    type="button"
+                >
+                    Create Account
+                </button>
+
+
+
+                <!-- SIGNUP MESSAGE -->
+
+                <div
+                    id="signupMessage"
+                    class="message"
+                    aria-live="polite"
+                ></div>
+
+
+
+                <!-- SWITCH TO LOGIN -->
+
+                <p class="switch-text">
+
+                    Already have an account?
+
+                    <button
+                        class="link-btn"
+                        id="showLoginBtn"
+                        type="button"
+                    >
+                        Login
+                    </button>
+
+                </p>
+
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         SUPABASE LIBRARY
+    ========================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+
+    <!-- =========================
+         SUPABASE CONFIGURATION
+    ========================== -->
+
+    <script src="supabase.js"></script>
+
+
+
+    <!-- =========================
+         AUTHENTICATION JAVASCRIPT
+    ========================== -->
+
+    <script src="auth.js"></script>
 
 
 </body>

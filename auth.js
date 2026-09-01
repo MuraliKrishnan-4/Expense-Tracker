@@ -2,6 +2,12 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
+        /*
+        ========================================
+        SUPABASE CLIENT
+        ========================================
+        */
+
         const supabase =
             window.supabaseClient;
 
@@ -28,6 +34,7 @@ document.addEventListener(
                 "loginSection"
             );
 
+
         const signupSection =
             document.getElementById(
                 "signupSection"
@@ -38,6 +45,7 @@ document.addEventListener(
             document.getElementById(
                 "loginEmail"
             );
+
 
         const loginPassword =
             document.getElementById(
@@ -50,10 +58,12 @@ document.addEventListener(
                 "signupName"
             );
 
+
         const signupEmail =
             document.getElementById(
                 "signupEmail"
             );
+
 
         const signupPassword =
             document.getElementById(
@@ -66,6 +76,7 @@ document.addEventListener(
                 "loginBtn"
             );
 
+
         const signupBtn =
             document.getElementById(
                 "signupBtn"
@@ -76,6 +87,7 @@ document.addEventListener(
             document.getElementById(
                 "loginMessage"
             );
+
 
         const signupMessage =
             document.getElementById(
@@ -125,11 +137,15 @@ document.addEventListener(
         ========================================
         */
 
-        document
-            .getElementById(
+        const showSignupBtn =
+            document.getElementById(
                 "showSignupBtn"
-            )
-            .addEventListener(
+            );
+
+
+        if (showSignupBtn) {
+
+            showSignupBtn.addEventListener(
                 "click",
                 () => {
 
@@ -137,21 +153,29 @@ document.addEventListener(
                         .classList
                         .add("hidden");
 
+
                     signupSection
                         .classList
                         .remove("hidden");
 
+
                     clearMessages();
+
                 }
             );
+        }
 
 
 
-        document
-            .getElementById(
+        const showLoginBtn =
+            document.getElementById(
                 "showLoginBtn"
-            )
-            .addEventListener(
+            );
+
+
+        if (showLoginBtn) {
+
+            showLoginBtn.addEventListener(
                 "click",
                 () => {
 
@@ -159,13 +183,17 @@ document.addEventListener(
                         .classList
                         .add("hidden");
 
+
                     loginSection
                         .classList
                         .remove("hidden");
 
+
                     clearMessages();
+
                 }
             );
+        }
 
 
 
@@ -216,7 +244,7 @@ document.addEventListener(
 
         /*
         ========================================
-        ENTER KEY
+        ENTER KEY - LOGIN
         ========================================
         */
 
@@ -229,10 +257,19 @@ document.addEventListener(
                 ) {
 
                     login();
+
                 }
+
             }
         );
 
+
+
+        /*
+        ========================================
+        ENTER KEY - SIGNUP
+        ========================================
+        */
 
         signupPassword.addEventListener(
             "keydown",
@@ -243,7 +280,9 @@ document.addEventListener(
                 ) {
 
                     signup();
+
                 }
+
             }
         );
 
@@ -294,6 +333,7 @@ document.addEventListener(
 
             loginBtn.disabled =
                 true;
+
 
             loginBtn.textContent =
                 "Logging in...";
@@ -370,9 +410,12 @@ document.addEventListener(
                 loginBtn.disabled =
                     false;
 
+
                 loginBtn.textContent =
                     "Login";
+
             }
+
         }
 
 
@@ -439,6 +482,7 @@ document.addEventListener(
             signupBtn.disabled =
                 true;
 
+
             signupBtn.textContent =
                 "Creating Account...";
 
@@ -446,8 +490,9 @@ document.addEventListener(
             try {
 
                 /*
-                Email verification will return
-                no session until the user verifies.
+                ========================================
+                EMAIL VERIFICATION REDIRECT
+                ========================================
                 */
 
                 const redirectUrl =
@@ -494,19 +539,19 @@ document.addEventListener(
 
 
                 /*
+                ========================================
                 EMAIL VERIFICATION
+                ========================================
                 */
 
                 if (!data.session) {
 
                     showMessage(
-
                         signupMessage,
 
                         "Account created successfully. Please check your email and click the verification link. After verification, return here and login.",
 
                         "success"
-
                     );
 
 
@@ -519,18 +564,17 @@ document.addEventListener(
 
 
                 /*
-                IF EMAIL CONFIRMATION
-                IS DISABLED
+                ========================================
+                EMAIL CONFIRMATION DISABLED
+                ========================================
                 */
 
                 showMessage(
-
                     signupMessage,
 
                     "Account created successfully. Opening Expense Tracker...",
 
                     "success"
-
                 );
 
 
@@ -566,16 +610,28 @@ document.addEventListener(
                 signupBtn.disabled =
                     false;
 
+
                 signupBtn.textContent =
                     "Create Account";
+
             }
+
         }
 
 
 
         /*
         ========================================
-        EYE BUTTON
+        PASSWORD EYE BUTTON
+        ========================================
+        
+        Hidden:
+        👁
+
+        Visible:
+        🙈
+
+        Only ONE eye button is shown.
         ========================================
         */
 
@@ -596,6 +652,39 @@ document.addEventListener(
                 );
 
 
+            if (!input || !button) {
+
+                console.warn(
+                    "Password toggle elements not found:",
+                    inputId,
+                    buttonId
+                );
+
+                return;
+            }
+
+
+            /*
+            Remove any existing button text
+            and set the initial eye.
+            */
+
+            button.textContent =
+                "👁";
+
+
+            button.setAttribute(
+                "aria-label",
+                "Show password"
+            );
+
+
+            button.setAttribute(
+                "title",
+                "Show password"
+            );
+
+
             button.addEventListener(
                 "click",
                 () => {
@@ -605,43 +694,60 @@ document.addEventListener(
                         "password"
                     ) {
 
+                        /*
+                        SHOW PASSWORD
+                        */
+
                         input.type =
                             "text";
+
 
                         button.textContent =
                             "🙈";
 
+
                         button.setAttribute(
                             "aria-label",
                             "Hide password"
                         );
+
 
                         button.setAttribute(
                             "title",
                             "Hide password"
                         );
 
+
                     } else {
+
+                        /*
+                        HIDE PASSWORD
+                        */
 
                         input.type =
                             "password";
 
+
                         button.textContent =
                             "👁";
+
 
                         button.setAttribute(
                             "aria-label",
                             "Show password"
                         );
 
+
                         button.setAttribute(
                             "title",
                             "Show password"
                         );
+
                     }
 
                 }
             );
+
         }
 
 
@@ -666,6 +772,11 @@ document.addEventListener(
                 message.toLowerCase();
 
 
+
+            /*
+            INVALID LOGIN
+            */
+
             if (
                 lower.includes(
                     "invalid login credentials"
@@ -677,6 +788,11 @@ document.addEventListener(
                 );
             }
 
+
+
+            /*
+            EMAIL NOT CONFIRMED
+            */
 
             if (
                 lower.includes(
@@ -690,6 +806,11 @@ document.addEventListener(
             }
 
 
+
+            /*
+            USER ALREADY EXISTS
+            */
+
             if (
                 lower.includes(
                     "user already registered"
@@ -701,6 +822,11 @@ document.addEventListener(
                 );
             }
 
+
+
+            /*
+            INVALID API KEY
+            */
 
             if (
                 lower.includes(
@@ -714,6 +840,11 @@ document.addEventListener(
             }
 
 
+
+            /*
+            CONFIRMATION EMAIL ERROR
+            */
+
             if (
                 lower.includes(
                     "sending confirmation email"
@@ -725,6 +856,11 @@ document.addEventListener(
                 );
             }
 
+
+
+            /*
+            RATE LIMIT
+            */
 
             if (
                 lower.includes(
@@ -738,17 +874,23 @@ document.addEventListener(
             }
 
 
+
+            /*
+            DEFAULT ERROR
+            */
+
             return (
                 message ||
                 "Something went wrong. Please try again."
             );
+
         }
 
 
 
         /*
         ========================================
-        MESSAGE
+        SHOW MESSAGE
         ========================================
         */
 
@@ -758,29 +900,49 @@ document.addEventListener(
             type
         ) {
 
+            if (!element) {
+                return;
+            }
+
+
             element.textContent =
                 text;
 
+
             element.className =
                 `message ${type}`;
+
         }
 
 
 
+        /*
+        ========================================
+        CLEAR MESSAGES
+        ========================================
+        */
+
         function clearMessages() {
 
-            loginMessage.textContent =
-                "";
+            if (loginMessage) {
 
-            signupMessage.textContent =
-                "";
+                loginMessage.textContent =
+                    "";
+
+                loginMessage.className =
+                    "message";
+            }
 
 
-            loginMessage.className =
-                "message";
+            if (signupMessage) {
 
-            signupMessage.className =
-                "message";
+                signupMessage.textContent =
+                    "";
+
+                signupMessage.className =
+                    "message";
+            }
+
         }
 
     }
