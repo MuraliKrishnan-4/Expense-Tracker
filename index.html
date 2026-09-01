@@ -2,31 +2,17 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Expense Tracker</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-
-    <!-- ========================================
-         HEADER
-    ========================================= -->
-
+    <!-- HEADER -->
     <header class="main-header">
 
         <div class="brand">
@@ -36,29 +22,20 @@
             </div>
 
             <div class="brand-text">
-
-                <h1>
-                    Expense Tracker
-                </h1>
-
-                <p>
-                    Track your income, expenses and savings
-                </p>
-
+                <h1>Expense Tracker</h1>
+                <p>Track your income, expenses and savings</p>
             </div>
 
         </div>
 
 
         <!-- PROFILE -->
-
         <div class="profile-area">
 
             <button
                 id="profileBtn"
                 class="profile-btn"
                 type="button"
-                aria-label="Open profile"
             >
                 👤
             </button>
@@ -92,9 +69,7 @@
 
                 <div class="profile-row">
 
-                    <span>
-                        Name
-                    </span>
+                    <span>Name</span>
 
                     <b id="profileDetailName">
                         -
@@ -105,9 +80,7 @@
 
                 <div class="profile-row">
 
-                    <span>
-                        Email
-                    </span>
+                    <span>Email</span>
 
                     <b id="profileDetailEmail">
                         -
@@ -132,21 +105,13 @@
 
 
 
-    <!-- ========================================
-         MAIN
-    ========================================= -->
-
+    <!-- MAIN -->
     <main class="container">
 
 
-        <!-- ====================================
-             SUMMARY
-        ===================================== -->
-
+        <!-- SUMMARY -->
         <section class="summary-grid">
 
-
-            <!-- BALANCE -->
 
             <div class="summary-card balance-card">
 
@@ -173,9 +138,6 @@
             </div>
 
 
-
-            <!-- INCOME -->
-
             <div class="summary-card income-card">
 
                 <div class="summary-icon">
@@ -200,9 +162,6 @@
             </div>
 
 
-
-            <!-- EXPENSE -->
-
             <div class="summary-card expense-card">
 
                 <div class="summary-icon">
@@ -226,15 +185,11 @@
 
             </div>
 
-
         </section>
 
 
 
-        <!-- ====================================
-             SAVING MESSAGE
-        ===================================== -->
-
+        <!-- SAVING MESSAGE -->
         <div
             id="savingMessage"
             class="saving-message"
@@ -242,10 +197,7 @@
 
 
 
-        <!-- ====================================
-             ADD TRANSACTION
-        ===================================== -->
-
+        <!-- ADD TRANSACTION -->
         <section class="card">
 
             <div class="section-heading">
@@ -270,12 +222,10 @@
                 autocomplete="off"
             >
 
-
                 <div class="form-grid">
 
 
                     <!-- DESCRIPTION -->
-
                     <div class="form-group">
 
                         <label for="description">
@@ -293,9 +243,7 @@
                     </div>
 
 
-
                     <!-- AMOUNT -->
-
                     <div class="form-group">
 
                         <label for="amount">
@@ -314,9 +262,7 @@
                     </div>
 
 
-
                     <!-- CATEGORY -->
-
                     <div class="form-group">
 
                         <label for="category">
@@ -377,9 +323,7 @@
                     </div>
 
 
-
                     <!-- TYPE -->
-
                     <div class="form-group">
 
                         <label for="type">
@@ -404,9 +348,7 @@
                     </div>
 
 
-
                     <!-- DATE -->
-
                     <div class="form-group">
 
                         <label for="date">
@@ -421,12 +363,8 @@
 
                     </div>
 
-
                 </div>
 
-
-
-                <!-- ADD BUTTON -->
 
                 <button
                     id="addTransactionBtn"
@@ -437,13 +375,10 @@
                 </button>
 
 
-                <!-- MESSAGE -->
-
                 <div
                     id="transactionMessage"
                     class="message"
                 ></div>
-
 
             </form>
 
@@ -451,10 +386,7 @@
 
 
 
-        <!-- ====================================
-             TRANSACTIONS
-        ===================================== -->
-
+        <!-- RECENT TRANSACTIONS -->
         <section class="card">
 
 
@@ -475,11 +407,21 @@
 
 
 
+                <!-- REFRESH + SEARCH -->
                 <div class="transaction-controls">
 
 
-                    <!-- SEARCH -->
+                    <!-- REFRESH FIRST -->
+                    <button
+                        id="refreshBtn"
+                        class="refresh-btn"
+                        type="button"
+                    >
+                        ↻ Refresh
+                    </button>
 
+
+                    <!-- SEARCH SECOND -->
                     <div class="search-box">
 
                         <span>
@@ -495,28 +437,13 @@
 
                     </div>
 
-
-
-                    <!-- REFRESH -->
-
-                    <button
-                        id="refreshBtn"
-                        class="refresh-btn"
-                        type="button"
-                    >
-                        ↻ Refresh
-                    </button>
-
-
                 </div>
-
 
             </div>
 
 
 
             <!-- LOADING -->
-
             <div
                 id="loadingTransactions"
                 class="loading"
@@ -527,7 +454,6 @@
 
 
             <!-- TABLE -->
-
             <div class="table-wrap">
 
                 <table>
@@ -573,15 +499,11 @@
 
             </div>
 
-
         </section>
 
 
 
-        <!-- ====================================
-             STATEMENT
-        ===================================== -->
-
+        <!-- STATEMENT -->
         <section class="card statement-card">
 
 
@@ -604,7 +526,6 @@
 
 
             <!-- STATEMENT CONTROLS -->
-
             <div class="statement-controls">
 
 
@@ -629,7 +550,6 @@
                 </div>
 
 
-
                 <div
                     id="statementMonthGroup"
                     class="form-group"
@@ -647,7 +567,6 @@
                 </div>
 
 
-
                 <button
                     id="generateStatementBtn"
                     class="add-btn statement-btn"
@@ -656,13 +575,11 @@
                     Generate Statement
                 </button>
 
-
             </div>
 
 
 
             <!-- DOWNLOAD -->
-
             <button
                 id="downloadStatementBtn"
                 class="download-btn hidden"
@@ -673,8 +590,6 @@
 
 
 
-            <!-- MESSAGE -->
-
             <div
                 id="statementMessage"
                 class="message"
@@ -682,21 +597,16 @@
 
 
 
-            <!-- STATEMENT RESULT -->
-
+            <!-- RESULT -->
             <div
                 id="statementResult"
                 class="statement-result hidden"
             >
 
-
                 <h3 id="statementTitle">
                     Statement
                 </h3>
 
-
-
-                <!-- STATEMENT SUMMARY -->
 
                 <div class="statement-summary">
 
@@ -717,7 +627,6 @@
                     </div>
 
 
-
                     <div class="statement-summary-item">
 
                         <span>
@@ -734,7 +643,6 @@
                     </div>
 
 
-
                     <div class="statement-summary-item">
 
                         <span>
@@ -747,12 +655,9 @@
 
                     </div>
 
-
                 </div>
 
 
-
-                <!-- STATEMENT TRANSACTIONS -->
 
                 <h3 class="statement-transactions-title">
                     Transactions
@@ -768,25 +673,15 @@
 
                             <tr>
 
-                                <th>
-                                    Date
-                                </th>
+                                <th>Date</th>
 
-                                <th>
-                                    Description
-                                </th>
+                                <th>Description</th>
 
-                                <th>
-                                    Category
-                                </th>
+                                <th>Category</th>
 
-                                <th>
-                                    Type
-                                </th>
+                                <th>Type</th>
 
-                                <th>
-                                    Amount
-                                </th>
+                                <th>Amount</th>
 
                             </tr>
 
@@ -801,9 +696,7 @@
 
                 </div>
 
-
             </div>
-
 
         </section>
 
@@ -812,10 +705,7 @@
 
 
 
-    <!-- ========================================
-         SUPABASE
-    ========================================= -->
-
+    <!-- SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="supabase.js"></script>
