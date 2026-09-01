@@ -10,523 +10,256 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Expense Tracker</title>
+    <title>Expense Tracker - Login</title>
 
     <link
         rel="stylesheet"
-        href="auth.css"
+        href="style.css"
     >
 
 </head>
 
 
-<body>
-
-    <main class="auth-container">
-
-        <div class="auth-card">
+<body class="auth-page">
 
 
-            <!-- ==============================
-                 TITLE
-            =============================== -->
+<main class="auth-container">
 
-            <div class="brand">
+    <section class="auth-card">
 
-                <div class="brand-icon">
-                    ₹
-                </div>
 
-                <h1>
-                    Expense Tracker
-                </h1>
+        <div class="app-logo">
+            💰
+        </div>
 
-                <p>
-                    Manage your money easily
-                </p>
+
+        <h1>
+            Expense Tracker
+        </h1>
+
+
+        <p class="app-subtitle">
+            Manage your money smarter
+        </p>
+
+
+
+        <!-- =========================
+             LOGIN
+        ========================== -->
+
+        <div id="loginSection">
+
+            <h2>
+                Welcome Back
+            </h2>
+
+            <p class="form-subtitle">
+                Login to manage your income and expenses
+            </p>
+
+
+            <label for="loginEmail">
+                Email
+            </label>
+
+            <input
+                id="loginEmail"
+                type="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+
+
+
+            <label for="loginPassword">
+                Password
+            </label>
+
+
+            <div class="password-wrap">
+
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
+
+
+                <button
+                    type="button"
+                    class="show-password"
+                    id="loginPasswordToggle"
+                    aria-label="Show password"
+                    title="Show password"
+                >
+                    👁
+                </button>
 
             </div>
 
 
 
-            <!-- ==============================
-                 LOGIN
-            =============================== -->
-
-            <section
-                id="loginSection"
-                class="auth-section"
+            <button
+                class="primary-btn"
+                id="loginBtn"
+                type="button"
             >
+                Login
+            </button>
 
-                <h2>
-                    Welcome Back
-                </h2>
-
-                <p class="section-subtitle">
-                    Login to continue
-                </p>
-
-
-                <form id="loginForm">
-
-
-                    <!-- EMAIL -->
-
-                    <div class="form-group">
-
-                        <label for="loginEmail">
-                            Email
-                        </label>
-
-                        <input
-                            type="email"
-                            id="loginEmail"
-                            placeholder="Enter your email"
-                            autocomplete="email"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- PASSWORD -->
-
-                    <div class="form-group">
-
-                        <label for="loginPassword">
-                            Password
-                        </label>
-
-
-                        <div class="password-wrapper">
-
-                            <input
-                                type="password"
-                                id="loginPassword"
-                                placeholder="Enter your password"
-                                autocomplete="current-password"
-                                required
-                            >
-
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-target="loginPassword"
-                            >
-                                👁
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- FORGOT PASSWORD -->
-
-                    <div class="forgot-container">
-
-                        <button
-                            type="button"
-                            id="forgotPasswordBtn"
-                            class="link-button"
-                        >
-                            Forgot Password?
-                        </button>
-
-                    </div>
-
-
-
-                    <!-- LOGIN BUTTON -->
-
-                    <button
-                        type="submit"
-                        id="loginBtn"
-                        class="primary-btn"
-                    >
-                        Login
-                    </button>
-
-
-                </form>
-
-
-
-                <!-- CREATE ACCOUNT -->
-
-                <div class="switch-auth">
-
-                    <span>
-                        Don't have an account?
-                    </span>
-
-                    <button
-                        type="button"
-                        id="showSignupBtn"
-                        class="link-button"
-                    >
-                        Create Account
-                    </button>
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- ==============================
-                 CREATE ACCOUNT
-            =============================== -->
-
-            <section
-                id="signupSection"
-                class="auth-section hidden"
-            >
-
-                <h2>
-                    Create Account
-                </h2>
-
-                <p class="section-subtitle">
-                    Start tracking your expenses
-                </p>
-
-
-                <form id="signupForm">
-
-
-                    <!-- NAME -->
-
-                    <div class="form-group">
-
-                        <label for="signupName">
-                            Full Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="signupName"
-                            placeholder="Enter your name"
-                            autocomplete="name"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- EMAIL -->
-
-                    <div class="form-group">
-
-                        <label for="signupEmail">
-                            Email
-                        </label>
-
-                        <input
-                            type="email"
-                            id="signupEmail"
-                            placeholder="Enter your email"
-                            autocomplete="email"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- PASSWORD -->
-
-                    <div class="form-group">
-
-                        <label for="signupPassword">
-                            Password
-                        </label>
-
-
-                        <div class="password-wrapper">
-
-                            <input
-                                type="password"
-                                id="signupPassword"
-                                placeholder="Create a password"
-                                autocomplete="new-password"
-                                minlength="8"
-                                required
-                            >
-
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-target="signupPassword"
-                            >
-                                👁
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- CONFIRM PASSWORD -->
-
-                    <div class="form-group">
-
-                        <label for="confirmPassword">
-                            Confirm Password
-                        </label>
-
-
-                        <div class="password-wrapper">
-
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                placeholder="Confirm your password"
-                                autocomplete="new-password"
-                                required
-                            >
-
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-target="confirmPassword"
-                            >
-                                👁
-                            </button>
-
-                        </div>
-
-
-                        <small
-                            id="passwordMatch"
-                            class="password-match"
-                        ></small>
-
-                    </div>
-
-
-
-                    <!-- CREATE ACCOUNT BUTTON -->
-
-                    <button
-                        type="submit"
-                        id="signupBtn"
-                        class="primary-btn"
-                    >
-                        Create Account
-                    </button>
-
-
-                </form>
-
-
-
-                <!-- LOGIN -->
-
-                <div class="switch-auth">
-
-                    <span>
-                        Already have an account?
-                    </span>
-
-                    <button
-                        type="button"
-                        id="showLoginBtn"
-                        class="link-button"
-                    >
-                        Login
-                    </button>
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- ==============================
-                 VERIFY EMAIL
-            =============================== -->
-
-            <section
-                id="verifySection"
-                class="verify-section hidden"
-            >
-
-
-                <div class="verify-icon">
-                    ✉️
-                </div>
-
-
-                <h2>
-                    Verify Your Email
-                </h2>
-
-
-                <p class="verify-success">
-                    Account created successfully!
-                </p>
-
-
-                <p>
-                    We sent a verification email to:
-                </p>
-
-
-                <strong
-                    id="verifyEmail"
-                    class="verify-email"
-                ></strong>
-
-
-                <div class="verify-message">
-
-                    <p>
-                        Please check your inbox and
-                        click the verification link.
-                    </p>
-
-                    <p>
-                        If you don't see the email,
-                        check your
-                        <strong>Spam</strong> or
-                        <strong>Junk</strong> folder.
-                    </p>
-
-                </div>
-
-
-
-                <!-- RESEND EMAIL -->
-
-                <button
-                    type="button"
-                    id="resendVerificationBtn"
-                    class="secondary-btn"
-                >
-                    Resend Verification Email
-                </button>
-
-
-
-                <!-- RETURN -->
-
-                <button
-                    type="button"
-                    id="returnToTrackerBtn"
-                    class="primary-btn"
-                >
-                    Return to Expense Tracker
-                </button>
-
-
-            </section>
-
-
-
-            <!-- ==============================
-                 FORGOT PASSWORD
-            =============================== -->
-
-            <section
-                id="forgotSection"
-                class="auth-section hidden"
-            >
-
-                <h2>
-                    Reset Password
-                </h2>
-
-
-                <p class="section-subtitle">
-                    Enter your email to receive
-                    a password reset link.
-                </p>
-
-
-                <form id="forgotForm">
-
-
-                    <div class="form-group">
-
-                        <label for="forgotEmail">
-                            Email
-                        </label>
-
-                        <input
-                            type="email"
-                            id="forgotEmail"
-                            placeholder="Enter your email"
-                            required
-                        >
-
-                    </div>
-
-
-                    <button
-                        type="submit"
-                        id="resetBtn"
-                        class="primary-btn"
-                    >
-                        Send Reset Link
-                    </button>
-
-
-                </form>
-
-
-                <div class="switch-auth">
-
-                    <button
-                        type="button"
-                        id="backToLoginBtn"
-                        class="link-button"
-                    >
-                        ← Back to Login
-                    </button>
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- ==============================
-                 MESSAGE
-            =============================== -->
 
             <div
-                id="authMessage"
-                class="auth-message hidden"
+                id="loginMessage"
+                class="message"
             ></div>
 
 
+
+            <p class="switch-text">
+
+                Don't have an account?
+
+                <button
+                    class="link-btn"
+                    id="showSignupBtn"
+                    type="button"
+                >
+                    Create Account
+                </button>
+
+            </p>
+
         </div>
 
-    </main>
+
+
+        <!-- =========================
+             CREATE ACCOUNT
+        ========================== -->
+
+        <div
+            id="signupSection"
+            class="hidden"
+        >
+
+            <h2>
+                Create Account
+            </h2>
+
+            <p class="form-subtitle">
+                Start tracking your income and expenses
+            </p>
 
 
 
-    <!-- SUPABASE -->
+            <label for="signupName">
+                Full Name
+            </label>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+            <input
+                id="signupName"
+                type="text"
+                placeholder="Enter your full name"
+                autocomplete="name"
+            >
 
 
-    <!-- AUTH JAVASCRIPT -->
 
-    <script src="auth.js"></script>
+            <label for="signupEmail">
+                Email
+            </label>
+
+            <input
+                id="signupEmail"
+                type="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+
+
+
+            <label for="signupPassword">
+                Password
+            </label>
+
+
+            <div class="password-wrap">
+
+                <input
+                    id="signupPassword"
+                    type="password"
+                    placeholder="Minimum 6 characters"
+                    autocomplete="new-password"
+                >
+
+
+                <button
+                    type="button"
+                    class="show-password"
+                    id="signupPasswordToggle"
+                    aria-label="Show password"
+                    title="Show password"
+                >
+                    👁
+                </button>
+
+            </div>
+
+
+
+            <button
+                class="primary-btn"
+                id="signupBtn"
+                type="button"
+            >
+                Create Account
+            </button>
+
+
+            <div
+                id="signupMessage"
+                class="message"
+            ></div>
+
+
+
+            <p class="switch-text">
+
+                Already have an account?
+
+                <button
+                    class="link-btn"
+                    id="showLoginBtn"
+                    type="button"
+                >
+                    Login
+                </button>
+
+            </p>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<!-- Supabase library -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- Your Supabase configuration -->
+<script src="supabase.js"></script>
+
+
+<!-- Authentication code -->
+<script src="auth.js"></script>
 
 
 </body>

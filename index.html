@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -11,9 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Expense Tracker
-    </title>
+    <title>Expense Tracker</title>
 
     <link
         rel="stylesheet"
@@ -26,70 +23,44 @@
 <body>
 
 
-<!-- ========================================
-     HEADER
-========================================= -->
+    <!-- ========================================
+         HEADER
+    ========================================= -->
 
-<header>
-
-
-    <div class="header-left">
-
+    <header class="main-header">
 
         <div class="brand">
 
-
-            <div class="brand-icon">
-
+            <div class="brand-logo">
                 💰
-
             </div>
 
-
-            <div>
+            <div class="brand-text">
 
                 <h1>
-
                     Expense Tracker
-
                 </h1>
 
-
                 <p>
-
                     Track your income, expenses and savings
-
                 </p>
 
             </div>
 
-
         </div>
 
 
-    </div>
+        <!-- PROFILE -->
 
-
-
-    <div class="header-right">
-
-
-        <!-- ========================================
-             PROFILE
-        ========================================= -->
-
-        <div class="profile-container">
-
+        <div class="profile-area">
 
             <button
                 id="profileBtn"
                 class="profile-btn"
                 type="button"
-                title="Profile"
+                aria-label="Open profile"
             >
-
                 👤
-
             </button>
 
 
@@ -98,30 +69,444 @@
                 class="profile-menu"
             >
 
+                <div class="profile-top">
 
-                <div class="profile-avatar">
+                    <strong id="profileName">
+                        User
+                    </strong>
 
-                    👤
+                    <span id="profileEmail">
+                        -
+                    </span>
 
                 </div>
 
 
-                <div class="profile-info">
+                <div class="profile-divider"></div>
 
 
-                    <h3 id="profileName">
-
-                        User
-
-                    </h3>
+                <div class="profile-title">
+                    PROFILE DETAILS
+                </div>
 
 
-                    <p id="profileEmail">
+                <div class="profile-row">
 
-                        Loading...
+                    <span>
+                        Name
+                    </span>
 
+                    <b id="profileDetailName">
+                        -
+                    </b>
+
+                </div>
+
+
+                <div class="profile-row">
+
+                    <span>
+                        Email
+                    </span>
+
+                    <b id="profileDetailEmail">
+                        -
+                    </b>
+
+                </div>
+
+
+                <button
+                    id="logoutBtn"
+                    class="logout-btn"
+                    type="button"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ========================================
+         MAIN
+    ========================================= -->
+
+    <main class="container">
+
+
+        <!-- ====================================
+             SUMMARY
+        ===================================== -->
+
+        <section class="summary-grid">
+
+
+            <!-- BALANCE -->
+
+            <div class="summary-card balance-card">
+
+                <div class="summary-icon">
+                    💰
+                </div>
+
+                <div class="summary-content">
+
+                    <span>
+                        Current Balance
+                    </span>
+
+                    <strong id="balance">
+                        ₹0.00
+                    </strong>
+
+                    <small>
+                        Income − Expense
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INCOME -->
+
+            <div class="summary-card income-card">
+
+                <div class="summary-icon">
+                    📈
+                </div>
+
+                <div class="summary-content">
+
+                    <span>
+                        Total Income
+                    </span>
+
+                    <strong
+                        id="income"
+                        class="income-text"
+                    >
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EXPENSE -->
+
+            <div class="summary-card expense-card">
+
+                <div class="summary-icon">
+                    📉
+                </div>
+
+                <div class="summary-content">
+
+                    <span>
+                        Total Expense
+                    </span>
+
+                    <strong
+                        id="expense"
+                        class="expense-text"
+                    >
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ====================================
+             SAVING MESSAGE
+        ===================================== -->
+
+        <div
+            id="savingMessage"
+            class="saving-message"
+        ></div>
+
+
+
+        <!-- ====================================
+             ADD TRANSACTION
+        ===================================== -->
+
+        <section class="card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Add Transaction
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Enter your income or expense
                     </p>
 
+                </div>
+
+            </div>
+
+
+            <form
+                id="transactionForm"
+                autocomplete="off"
+            >
+
+
+                <div class="form-grid">
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-group">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <input
+                            id="description"
+                            type="text"
+                            placeholder="Example: Salary, Food, Travel"
+                            maxlength="100"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- AMOUNT -->
+
+                    <div class="form-group">
+
+                        <label for="amount">
+                            Amount
+                        </label>
+
+                        <input
+                            id="amount"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="Enter amount"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <select
+                            id="category"
+                            required
+                        >
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option value="Food">
+                                Food
+                            </option>
+
+                            <option value="Transport">
+                                Transport
+                            </option>
+
+                            <option value="Shopping">
+                                Shopping
+                            </option>
+
+                            <option value="Bills">
+                                Bills
+                            </option>
+
+                            <option value="Entertainment">
+                                Entertainment
+                            </option>
+
+                            <option value="Health">
+                                Health
+                            </option>
+
+                            <option value="Education">
+                                Education
+                            </option>
+
+                            <option value="Salary">
+                                Salary
+                            </option>
+
+                            <option value="Business">
+                                Business
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- TYPE -->
+
+                    <div class="form-group">
+
+                        <label for="type">
+                            Type
+                        </label>
+
+                        <select
+                            id="type"
+                            required
+                        >
+
+                            <option value="expense">
+                                Expense
+                            </option>
+
+                            <option value="income">
+                                Income
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- DATE -->
+
+                    <div class="form-group">
+
+                        <label for="date">
+                            Date
+                        </label>
+
+                        <input
+                            id="date"
+                            type="date"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ADD BUTTON -->
+
+                <button
+                    id="addTransactionBtn"
+                    class="add-btn"
+                    type="submit"
+                >
+                    Add Transaction
+                </button>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="transactionMessage"
+                    class="message"
+                ></div>
+
+
+            </form>
+
+        </section>
+
+
+
+        <!-- ====================================
+             TRANSACTIONS
+        ===================================== -->
+
+        <section class="card">
+
+
+            <div class="transactions-header">
+
+
+                <div class="transactions-title">
+
+                    <h2>
+                        Recent Transactions
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Your latest income and expenses
+                    </p>
+
+                </div>
+
+
+
+                <div class="transaction-controls">
+
+
+                    <!-- SEARCH -->
+
+                    <div class="search-box">
+
+                        <span>
+                            🔍
+                        </span>
+
+                        <input
+                            id="transactionSearch"
+                            type="search"
+                            placeholder="Search transactions..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+
+                    <!-- REFRESH -->
+
+                    <button
+                        id="refreshBtn"
+                        class="refresh-btn"
+                        type="button"
+                    >
+                        ↻ Refresh
+                    </button>
+
 
                 </div>
 
@@ -129,502 +514,290 @@
             </div>
 
 
-        </div>
 
-
-        <!-- LOGOUT -->
-
-        <button
-            id="logoutBtn"
-            class="logout-btn"
-            type="button"
-        >
-
-            Logout
-
-        </button>
-
-
-    </div>
-
-
-</header>
-
-
-
-<main>
-
-
-    <!-- ========================================
-         BALANCE
-    ========================================= -->
-
-    <section
-        class="balance-card"
-    >
-
-
-        <p>
-
-            Current Balance
-
-        </p>
-
-
-        <h2 id="balance">
-
-            ₹0.00
-
-        </h2>
-
-
-        <span>
-
-            Income − Expense
-
-        </span>
-
-
-    </section>
-
-
-
-    <!-- ========================================
-         SUMMARY
-    ========================================= -->
-
-    <section
-        class="summary"
-    >
-
-
-        <div
-            class="summary-card income-card"
-        >
-
-
-            <p>
-
-                Total Income
-
-            </p>
-
-
-            <h3 id="totalIncome">
-
-                ₹0.00
-
-            </h3>
-
-
-        </div>
-
-
-
-        <div
-            class="summary-card expense-card"
-        >
-
-
-            <p>
-
-                Total Expense
-
-            </p>
-
-
-            <h3 id="totalExpense">
-
-                ₹0.00
-
-            </h3>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- ========================================
-         EXPENSE CHART
-    ========================================= -->
-
-    <section
-        class="chart-card"
-    >
-
-
-        <div class="chart-header">
-
-
-            <div>
-
-
-                <h2>
-
-                    Expense Chart
-
-                </h2>
-
-
-                <p>
-
-                    See where your money is going
-
-                </p>
-
-
-            </div>
-
+            <!-- LOADING -->
 
             <div
-                id="chartTotal"
-                class="chart-total"
+                id="loadingTransactions"
+                class="loading"
             >
+                Loading transactions...
+            </div>
 
-                ₹0.00
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="transactionsBody">
+
+                    </tbody>
+
+                </table>
 
             </div>
 
 
-        </div>
+        </section>
 
 
-        <div class="chart-content">
+
+        <!-- ====================================
+             STATEMENT
+        ===================================== -->
+
+        <section class="card statement-card">
 
 
-            <div class="chart-wrapper">
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Statement
+                    </h2>
+
+                    <p class="section-subtitle">
+                        View your weekly or monthly income and expenses
+                    </p>
+
+                </div>
+
+            </div>
 
 
-                <canvas
-                    id="expenseChart"
-                ></canvas>
+
+            <!-- STATEMENT CONTROLS -->
+
+            <div class="statement-controls">
+
+
+                <div class="form-group">
+
+                    <label for="statementType">
+                        Statement Type
+                    </label>
+
+                    <select id="statementType">
+
+                        <option value="monthly">
+                            Monthly Statement
+                        </option>
+
+                        <option value="weekly">
+                            Weekly Statement
+                        </option>
+
+                    </select>
+
+                </div>
+
 
 
                 <div
-                    id="chartCenter"
-                    class="chart-center"
+                    id="statementMonthGroup"
+                    class="form-group"
                 >
 
+                    <label for="statementMonth">
+                        Month
+                    </label>
 
-                    <strong>
-
-                        ₹0.00
-
-                    </strong>
-
-
-                    <span>
-
-                        Total Expense
-
-                    </span>
-
+                    <input
+                        id="statementMonth"
+                        type="month"
+                    >
 
                 </div>
+
+
+
+                <button
+                    id="generateStatementBtn"
+                    class="add-btn statement-btn"
+                    type="button"
+                >
+                    Generate Statement
+                </button>
 
 
             </div>
 
 
+
+            <!-- DOWNLOAD -->
+
+            <button
+                id="downloadStatementBtn"
+                class="download-btn hidden"
+                type="button"
+            >
+                ⬇ Download Statement
+            </button>
+
+
+
+            <!-- MESSAGE -->
+
             <div
-                id="chartLegend"
-                class="chart-legend"
+                id="statementMessage"
+                class="message"
             ></div>
 
 
-        </div>
 
-
-        <div
-            id="chartEmpty"
-            class="chart-empty"
-        >
-
-            Add expenses to see your chart.
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- ========================================
-         ADD TRANSACTION
-    ========================================= -->
-
-    <section
-        class="form-card"
-    >
-
-
-        <h2>
-
-            Add Transaction
-
-        </h2>
-
-
-        <p>
-
-            Enter your income or expense
-
-        </p>
-
-
-        <form
-            id="transactionForm"
-            autocomplete="off"
-        >
-
+            <!-- STATEMENT RESULT -->
 
             <div
-                class="form-grid"
+                id="statementResult"
+                class="statement-result hidden"
             >
 
 
-                <!-- DESCRIPTION -->
-
-                <div>
-
-
-                    <label
-                        for="description"
-                    >
-
-                        Description
-
-                    </label>
+                <h3 id="statementTitle">
+                    Statement
+                </h3>
 
 
-                    <input
-                        type="text"
-                        id="description"
-                        name="expense_description"
-                        placeholder="Example: Salary, Food, Travel"
-                        autocomplete="off"
-                        required
-                    >
+
+                <!-- STATEMENT SUMMARY -->
+
+                <div class="statement-summary">
+
+
+                    <div class="statement-summary-item">
+
+                        <span>
+                            Total Income
+                        </span>
+
+                        <strong
+                            id="statementIncome"
+                            class="income-text"
+                        >
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="statement-summary-item">
+
+                        <span>
+                            Total Expense
+                        </span>
+
+                        <strong
+                            id="statementExpense"
+                            class="expense-text"
+                        >
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="statement-summary-item">
+
+                        <span>
+                            Net Balance
+                        </span>
+
+                        <strong id="statementBalance">
+                            ₹0.00
+                        </strong>
+
+                    </div>
 
 
                 </div>
 
 
 
-                <!-- AMOUNT -->
+                <!-- STATEMENT TRANSACTIONS -->
 
-                <div>
+                <h3 class="statement-transactions-title">
+                    Transactions
+                </h3>
 
 
-                    <label
-                        for="amount"
-                    >
 
-                        Amount
+                <div class="table-wrap">
 
-                    </label>
+                    <table>
 
+                        <thead>
 
-                    <input
-                        type="number"
-                        id="amount"
-                        name="expense_amount"
-                        placeholder="Enter amount"
-                        min="0.01"
-                        step="0.01"
-                        autocomplete="off"
-                        required
-                    >
+                            <tr>
 
+                                <th>
+                                    Date
+                                </th>
 
-                </div>
+                                <th>
+                                    Description
+                                </th>
 
+                                <th>
+                                    Category
+                                </th>
 
+                                <th>
+                                    Type
+                                </th>
 
-                <!-- CATEGORY -->
+                                <th>
+                                    Amount
+                                </th>
 
-                <div>
+                            </tr>
 
+                        </thead>
 
-                    <label
-                        for="category"
-                    >
 
-                        Category
+                        <tbody id="statementBody">
 
-                    </label>
+                        </tbody>
 
-
-                    <select
-                        id="category"
-                        required
-                    >
-
-
-                        <option value="">
-
-                            Select Category
-
-                        </option>
-
-
-                        <option value="Food">
-
-                            Food
-
-                        </option>
-
-
-                        <option value="Travel">
-
-                            Travel
-
-                        </option>
-
-
-                        <option value="Shopping">
-
-                            Shopping
-
-                        </option>
-
-
-                        <option value="Bills">
-
-                            Bills
-
-                        </option>
-
-
-                        <option value="Salary">
-
-                            Salary
-
-                        </option>
-
-
-                        <option value="Freelance">
-
-                            Freelance
-
-                        </option>
-
-
-                        <option value="Investment">
-
-                            Investment
-
-                        </option>
-
-
-                        <option value="Other">
-
-                            Other
-
-                        </option>
-
-
-                    </select>
-
-
-                </div>
-
-
-
-                <!-- CUSTOM CATEGORY -->
-
-                <div
-                    id="customCategoryBox"
-                    class="custom-category hidden"
-                >
-
-
-                    <label
-                        for="customCategory"
-                    >
-
-                        Enter Category
-
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="customCategory"
-                        placeholder="Example: Medical, Education, Rent"
-                        autocomplete="off"
-                    >
-
-
-                </div>
-
-
-
-                <!-- TYPE -->
-
-                <div>
-
-
-                    <label
-                        for="type"
-                    >
-
-                        Type
-
-                    </label>
-
-
-                    <select
-                        id="type"
-                        required
-                    >
-
-
-                        <option value="expense">
-
-                            Expense
-
-                        </option>
-
-
-                        <option value="income">
-
-                            Income
-
-                        </option>
-
-
-                    </select>
-
-
-                </div>
-
-
-
-                <!-- DATE -->
-
-                <div>
-
-
-                    <label
-                        for="transactionDate"
-                    >
-
-                        Date
-
-                    </label>
-
-
-                    <input
-                        type="date"
-                        id="transactionDate"
-                        autocomplete="off"
-                        required
-                    >
-
+                    </table>
 
                 </div>
 
@@ -632,203 +805,22 @@
             </div>
 
 
-
-            <button
-                type="submit"
-                class="add-btn"
-                id="addTransactionBtn"
-            >
-
-                Add Transaction
-
-            </button>
+        </section>
 
 
-        </form>
-
-
-    </section>
+    </main>
 
 
 
     <!-- ========================================
-         TRANSACTIONS
+         SUPABASE
     ========================================= -->
 
-    <section
-        class="transaction-section"
-    >
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="supabase.js"></script>
 
-        <div
-            class="section-header"
-        >
-
-
-            <div>
-
-
-                <h2>
-
-                    Recent Transactions
-
-                </h2>
-
-
-                <p>
-
-                    Your latest income and expenses
-
-                </p>
-
-
-            </div>
-
-
-            <button
-                id="refreshBtn"
-                class="refresh-btn"
-                type="button"
-            >
-
-                Refresh
-
-            </button>
-
-
-        </div>
-
-
-
-        <div
-            id="loading"
-            class="loading"
-        >
-
-            Loading transactions...
-
-        </div>
-
-
-
-        <div
-            id="emptyMessage"
-            class="empty-message"
-        >
-
-            No transactions yet.
-
-        </div>
-
-
-
-        <div
-            class="table-container"
-        >
-
-
-            <table>
-
-
-                <thead>
-
-
-                    <tr>
-
-
-                        <th>
-
-                            Description
-
-                        </th>
-
-
-                        <th>
-
-                            Category
-
-                        </th>
-
-
-                        <th>
-
-                            Type
-
-                        </th>
-
-
-                        <th>
-
-                            Date
-
-                        </th>
-
-
-                        <th>
-
-                            Amount
-
-                        </th>
-
-
-                        <th>
-
-                            Action
-
-                        </th>
-
-
-                    </tr>
-
-
-                </thead>
-
-
-                <tbody
-                    id="transactionList"
-                >
-
-                </tbody>
-
-
-            </table>
-
-
-        </div>
-
-
-    </section>
-
-
-</main>
-
-
-
-<!-- ========================================
-     CHART.JS
-========================================= -->
-
-<script
-    src="https://cdn.jsdelivr.net/npm/chart.js"
-></script>
-
-
-<!-- ========================================
-     SUPABASE
-========================================= -->
-
-<script
-    src="supabase.js"
-></script>
-
-
-<!-- ========================================
-     APPLICATION SCRIPT
-========================================= -->
-
-<script
-    src="script.js"
-></script>
+    <script src="script.js"></script>
 
 
 </body>

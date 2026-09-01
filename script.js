@@ -1,2074 +1,2272 @@
-// ========================================
-// EXPENSE TRACKER
-// SUPABASE DATABASE + EXPENSE CHART
-// ========================================
+document.addEventListener("DOMContentLoaded", async () => {
 
+    /* ========================================
+       SUPABASE
+    ======================================== */
 
+    const supabase = window.supabaseClient;
 
-// ========================================
-// GET ELEMENTS
-// ========================================
-
-const transactionForm =
-    document.getElementById("transactionForm");
-
-
-const descriptionInput =
-    document.getElementById("description");
-
-
-const amountInput =
-    document.getElementById("amount");
-
-
-const categoryInput =
-    document.getElementById("category");
-
-
-const customCategoryBox =
-    document.getElementById("customCategoryBox");
-
-
-const customCategoryInput =
-    document.getElementById("customCategory");
-
-
-const typeInput =
-    document.getElementById("type");
-
-
-const transactionDateInput =
-    document.getElementById("transactionDate");
-
-
-const transactionList =
-    document.getElementById("transactionList");
-
-
-const loading =
-    document.getElementById("loading");
-
-
-const emptyMessage =
-    document.getElementById("emptyMessage");
-
-
-const refreshBtn =
-    document.getElementById("refreshBtn");
-
-
-const logoutBtn =
-    document.getElementById("logoutBtn");
-
-
-const profileBtn =
-    document.getElementById("profileBtn");
-
-
-const profileMenu =
-    document.getElementById("profileMenu");
-
-
-const profileName =
-    document.getElementById("profileName");
-
-
-const profileEmail =
-    document.getElementById("profileEmail");
-
-
-const balanceElement =
-    document.getElementById("balance");
-
-
-const totalIncomeElement =
-    document.getElementById("totalIncome");
-
-
-const totalExpenseElement =
-    document.getElementById("totalExpense");
-
-
-const addTransactionBtn =
-    document.getElementById("addTransactionBtn");
-
-
-const expenseChartCanvas =
-    document.getElementById("expenseChart");
-
-
-const chartLegend =
-    document.getElementById("chartLegend");
-
-
-const chartCenter =
-    document.getElementById("chartCenter");
-
-
-const chartTotal =
-    document.getElementById("chartTotal");
-
-
-const chartEmpty =
-    document.getElementById("chartEmpty");
-
-
-
-// ========================================
-// GLOBAL VARIABLES
-// ========================================
-
-let transactions = [];
-
-let expenseChart = null;
-
-
-
-// ========================================
-// PAGE LOAD
-// ========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
-
-        setTodayDate();
-
-        setupProfile();
-
-        setupCategory();
-
-        await checkUser();
-
-    }
-);
-
-
-
-// ========================================
-// SET TODAY DATE
-// ========================================
-
-function setTodayDate() {
-
-    if (!transactionDateInput) {
-
+    if (!supabase) {
+        console.error("Supabase client not found.");
         return;
-
     }
 
 
-    const today =
-        new Date();
+    /* ========================================
+       CHECK LOGIN
+    ======================================== */
+
+    const {
+        data: { session },
+        error: sessionError
+    } = await supabase.auth.getSession();
+
+    if (sessionError) {
+        console.error(
+            "Session error:",
+            sessionError
+        );
+
+        window.location.replace("auth.html");
+        return;
+    }
+
+    if (!session || !session.user) {
+        window.location.replace("auth.html");
+        return;
+    }
+
+    const user = session.user;
 
 
-    const year =
-        today.getFullYear();
+    /* ========================================
+       PROFILE
+    ======================================== */
 
+    const profileBtn =
+        document.getElementById("profileBtn");
 
-    const month =
-        String(
-            today.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
+    const profileMenu =
+        document.getElementById("profileMenu");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    const profileName =
+        document.getElementById("profileName");
+
+    const profileEmail =
+        document.getElementById("profileEmail");
+
+    const profileDetailName =
+        document.getElementById(
+            "profileDetailName"
+        );
+
+    const profileDetailEmail =
+        document.getElementById(
+            "profileDetailEmail"
         );
 
 
-    const day =
-        String(
-            today.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    transactionDateInput.value =
-        year +
-        "-" +
-        month +
-        "-" +
-        day;
-
-}
-
-
-
-// ========================================
-// CHECK USER
-// ========================================
-
-async function checkUser() {
-
-    const session =
-        getSession();
-
-
-    if (
-        !session ||
-        !session.access_token ||
-        !session.user
-    ) {
-
-        window.location.href =
-            "auth.html";
-
-        return;
-
-    }
-
-
-    displayUserProfile(
-        session.user
-    );
-
-
-    await loadTransactions();
-
-}
-
-
-
-// ========================================
-// DISPLAY USER PROFILE
-// ========================================
-
-function displayUserProfile(
-    user
-) {
-
-    if (!user) {
-
-        return;
-
-    }
-
-
-    const email =
-        user.email || "No email";
-
-
-    const metadata =
-        user.user_metadata || {};
-
-
-    const name =
-        metadata.full_name ||
-        metadata.name ||
-        email.split("@")[0] ||
+    const userName =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.email?.split("@")[0] ||
         "User";
 
 
+    const userEmail =
+        user.email || "";
+
+
     if (profileName) {
-
         profileName.textContent =
-            name;
-
+            userName;
     }
-
 
     if (profileEmail) {
-
         profileEmail.textContent =
-            email;
-
+            userEmail;
     }
 
-}
+    if (profileDetailName) {
+        profileDetailName.textContent =
+            userName;
+    }
 
-
-
-// ========================================
-// PROFILE MENU
-// ========================================
-
-function setupProfile() {
-
-    if (
-        !profileBtn ||
-        !profileMenu
-    ) {
-
-        return;
-
+    if (profileDetailEmail) {
+        profileDetailEmail.textContent =
+            userEmail;
     }
 
 
-    profileBtn.addEventListener(
-        "click",
-        function (event) {
+    /* ========================================
+       PROFILE MENU
+    ======================================== */
 
-            event.stopPropagation();
+    if (profileBtn && profileMenu) {
 
-            profileMenu.classList.toggle(
-                "show"
-            );
+        profileBtn.addEventListener(
+            "click",
+            function (event) {
 
-        }
-    );
+                event.stopPropagation();
 
-
-    profileMenu.addEventListener(
-        "click",
-        function (event) {
-
-            event.stopPropagation();
-
-        }
-    );
-
-
-    document.addEventListener(
-        "click",
-        function () {
-
-            profileMenu.classList.remove(
-                "show"
-            );
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// CATEGORY SETUP
-// ========================================
-
-function setupCategory() {
-
-    if (!categoryInput) {
-
-        return;
-
-    }
-
-
-    categoryInput.addEventListener(
-        "change",
-        function () {
-
-            if (
-                categoryInput.value ===
-                "Other"
-            ) {
-
-                customCategoryBox.classList.remove(
-                    "hidden"
+                profileMenu.classList.toggle(
+                    "show"
                 );
 
+            }
+        );
 
-                customCategoryInput.required =
-                    true;
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    !profileMenu.contains(
+                        event.target
+                    ) &&
+                    !profileBtn.contains(
+                        event.target
+                    )
+                ) {
+
+                    profileMenu.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
 
 
-                setTimeout(
+    /* ========================================
+       LOGOUT
+    ======================================== */
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            async function () {
+
+                logoutBtn.disabled = true;
+
+                logoutBtn.textContent =
+                    "Logging out...";
+
+
+                const {
+                    error
+                } =
+                    await supabase.auth.signOut();
+
+
+                if (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+                    alert(
+                        "Logout failed. Please try again."
+                    );
+
+                    logoutBtn.disabled =
+                        false;
+
+                    logoutBtn.textContent =
+                        "Logout";
+
+                    return;
+                }
+
+
+                window.location.replace(
+                    "auth.html"
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ========================================
+       TRANSACTION ELEMENTS
+    ======================================== */
+
+    const transactionForm =
+        document.getElementById(
+            "transactionForm"
+        );
+
+    const descriptionInput =
+        document.getElementById(
+            "description"
+        );
+
+    const amountInput =
+        document.getElementById(
+            "amount"
+        );
+
+    const categoryInput =
+        document.getElementById(
+            "category"
+        );
+
+    const typeInput =
+        document.getElementById(
+            "type"
+        );
+
+    const dateInput =
+        document.getElementById(
+            "date"
+        );
+
+    const addTransactionBtn =
+        document.getElementById(
+            "addTransactionBtn"
+        );
+
+    const transactionMessage =
+        document.getElementById(
+            "transactionMessage"
+        );
+
+    const transactionsBody =
+        document.getElementById(
+            "transactionsBody"
+        );
+
+    const loadingTransactions =
+        document.getElementById(
+            "loadingTransactions"
+        );
+
+    const refreshBtn =
+        document.getElementById(
+            "refreshBtn"
+        );
+
+
+    /* ========================================
+       SEARCH ELEMENT
+    ======================================== */
+
+    const transactionSearch =
+        document.getElementById(
+            "transactionSearch"
+        );
+
+
+    /* ========================================
+       STORE ALL TRANSACTIONS
+    ======================================== */
+
+    let allTransactions = [];
+
+
+    /* ========================================
+       SET TODAY'S DATE
+    ======================================== */
+
+    if (dateInput) {
+
+        dateInput.value =
+            getToday();
+
+    }
+
+
+    /* ========================================
+       ADD TRANSACTION
+    ======================================== */
+
+    if (transactionForm) {
+
+        transactionForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                clearTransactionMessage();
+
+
+                const description =
+                    descriptionInput
+                        ? descriptionInput.value.trim()
+                        : "";
+
+
+                const amount =
+                    amountInput
+                        ? Number(
+                            amountInput.value
+                        )
+                        : 0;
+
+
+                const category =
+                    categoryInput
+                        ? categoryInput.value
+                        : "";
+
+
+                const type =
+                    typeInput
+                        ? typeInput.value
+                        : "expense";
+
+
+                const date =
+                    dateInput
+                        ? dateInput.value
+                        : "";
+
+
+                /* Validation */
+
+                if (!description) {
+
+                    showTransactionMessage(
+                        "Please enter a description.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !amount ||
+                    amount <= 0
+                ) {
+
+                    showTransactionMessage(
+                        "Please enter a valid amount.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (!category) {
+
+                    showTransactionMessage(
+                        "Please select a category.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (!date) {
+
+                    showTransactionMessage(
+                        "Please select a date.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                /* Disable button */
+
+                if (addTransactionBtn) {
+
+                    addTransactionBtn.disabled =
+                        true;
+
+                    addTransactionBtn.textContent =
+                        "Adding...";
+
+                }
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await supabase
+                            .from("transactions")
+                            .insert({
+
+                                user_id:
+                                    user.id,
+
+                                description:
+                                    description,
+
+                                amount:
+                                    amount,
+
+                                category:
+                                    category,
+
+                                type:
+                                    type,
+
+                                date:
+                                    date
+
+                            });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    showTransactionMessage(
+                        "Transaction added successfully.",
+                        "success"
+                    );
+
+
+                    transactionForm.reset();
+
+
+                    if (dateInput) {
+
+                        dateInput.value =
+                            getToday();
+
+                    }
+
+
+                    if (typeInput) {
+
+                        typeInput.value =
+                            "expense";
+
+                    }
+
+
+                    await loadTransactions();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Add transaction error:",
+                        error
+                    );
+
+
+                    showTransactionMessage(
+                        error.message ||
+                        "Could not add transaction.",
+                        "error"
+                    );
+
+
+                } finally {
+
+                    if (addTransactionBtn) {
+
+                        addTransactionBtn.disabled =
+                            false;
+
+                        addTransactionBtn.textContent =
+                            "Add Transaction";
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================
+       LOAD TRANSACTIONS
+    ======================================== */
+
+    async function loadTransactions() {
+
+        if (loadingTransactions) {
+
+            loadingTransactions.style.display =
+                "block";
+
+            loadingTransactions.textContent =
+                "Loading transactions...";
+
+        }
+
+
+        if (transactionsBody) {
+
+            transactionsBody.innerHTML =
+                "";
+
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabase
+                    .from("transactions")
+                    .select("*")
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+                    .order(
+                        "date",
+                        {
+                            ascending: false
+                        }
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            allTransactions =
+                data || [];
+
+
+            if (loadingTransactions) {
+
+                loadingTransactions.style.display =
+                    "none";
+
+            }
+
+
+            displayTransactions(
+                allTransactions
+            );
+
+
+            updateSummary(
+                allTransactions
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Load transactions error:",
+                error
+            );
+
+
+            allTransactions = [];
+
+
+            if (loadingTransactions) {
+
+                loadingTransactions.textContent =
+                    "Could not load transactions.";
+
+            }
+
+
+            if (transactionsBody) {
+
+                transactionsBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="empty"
+                        >
+                            Could not load transactions.
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    /* ========================================
+       DISPLAY TRANSACTIONS
+    ======================================== */
+
+    function displayTransactions(
+        transactions
+    ) {
+
+        if (!transactionsBody) {
+
+            console.error(
+                "transactionsBody not found."
+            );
+
+            return;
+        }
+
+
+        transactionsBody.innerHTML =
+            "";
+
+
+        if (
+            !transactions ||
+            transactions.length === 0
+        ) {
+
+            transactionsBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        No transactions found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        transactions.forEach(
+            function (transaction) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const transactionType =
+                    String(
+                        transaction.type ||
+                        "expense"
+                    ).toLowerCase();
+
+
+                const isIncome =
+                    transactionType ===
+                    "income";
+
+
+                const description =
+                    escapeHtml(
+                        transaction.description ||
+                        ""
+                    );
+
+
+                const category =
+                    escapeHtml(
+                        transaction.category ||
+                        ""
+                    );
+
+
+                const date =
+                    formatDate(
+                        transaction.date
+                    );
+
+
+                const amount =
+                    Number(
+                        transaction.amount
+                    ) || 0;
+
+
+                const formattedAmount =
+                    amount.toLocaleString(
+                        "en-IN",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${description}
+                    </td>
+
+                    <td>
+                        ${category}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${
+                                isIncome
+                                    ? "income"
+                                    : "expense"
+                            }"
+                        >
+
+                            ${
+                                isIncome
+                                    ? "Income"
+                                    : "Expense"
+                            }
+
+                        </span>
+
+                    </td>
+
+                    <td>
+                        ${date}
+                    </td>
+
+                    <td
+                        class="${
+                            isIncome
+                                ? "income-text"
+                                : "expense-text"
+                        }"
+                    >
+
+                        ${
+                            isIncome
+                                ? "+"
+                                : "-"
+                        }₹${formattedAmount}
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="delete-btn"
+                            data-id="${
+                                transaction.id
+                            }"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                transactionsBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        /* ====================================
+           DELETE BUTTONS
+        ==================================== */
+
+        const deleteButtons =
+            transactionsBody.querySelectorAll(
+                ".delete-btn"
+            );
+
+
+        deleteButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
                     function () {
 
-                        customCategoryInput.focus();
+                        deleteTransaction(
+                            button.dataset.id
+                        );
 
-                    },
-                    50
+                    }
                 );
 
             }
-
-            else {
-
-                customCategoryBox.classList.add(
-                    "hidden"
-                );
-
-
-                customCategoryInput.required =
-                    false;
-
-
-                customCategoryInput.value =
-                    "";
-
-            }
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// GET FINAL CATEGORY
-// ========================================
-
-function getFinalCategory() {
-
-    const selectedCategory =
-        categoryInput.value;
-
-
-    if (
-        selectedCategory ===
-        "Other"
-    ) {
-
-        const customCategory =
-            customCategoryInput.value.trim();
-
-
-        if (!customCategory) {
-
-            alert(
-                "Please enter a category."
-            );
-
-            customCategoryInput.focus();
-
-            return null;
-
-        }
-
-
-        return customCategory;
+        );
 
     }
 
 
-    return selectedCategory;
+    /* ========================================
+       SEARCH TRANSACTIONS
+    ======================================== */
 
-}
+    if (transactionSearch) {
 
+        transactionSearch.addEventListener(
+            "input",
+            function () {
 
+                const searchText =
+                    transactionSearch.value
+                        .trim()
+                        .toLowerCase();
 
-// ========================================
-// ADD TRANSACTION
-// ========================================
 
-if (transactionForm) {
+                /* Empty search = show all */
 
-    transactionForm.addEventListener(
-        "submit",
-        async function (event) {
+                if (!searchText) {
 
-            event.preventDefault();
+                    displayTransactions(
+                        allTransactions
+                    );
 
+                    return;
+                }
 
-            const session =
-                getSession();
 
+                const filtered =
+                    allTransactions.filter(
+                        function (transaction) {
 
-            if (
-                !session ||
-                !session.access_token ||
-                !session.user
-            ) {
+                            const description =
+                                String(
+                                    transaction.description ||
+                                    ""
+                                ).toLowerCase();
 
-                alert(
-                    "Your session has expired. Please login again."
-                );
 
+                            const category =
+                                String(
+                                    transaction.category ||
+                                    ""
+                                ).toLowerCase();
 
-                window.location.href =
-                    "auth.html";
 
+                            const type =
+                                String(
+                                    transaction.type ||
+                                    ""
+                                ).toLowerCase();
 
-                return;
 
-            }
+                            const date =
+                                String(
+                                    transaction.date ||
+                                    ""
+                                ).toLowerCase();
 
 
-            const description =
-                descriptionInput.value.trim();
+                            const amount =
+                                String(
+                                    transaction.amount ||
+                                    ""
+                                ).toLowerCase();
 
 
-            const amount =
-                Number(
-                    amountInput.value
-                );
+                            return (
 
+                                description.includes(
+                                    searchText
+                                )
 
-            const finalCategory =
-                getFinalCategory();
+                                ||
 
+                                category.includes(
+                                    searchText
+                                )
 
-            const type =
-                typeInput.value;
+                                ||
 
+                                type.includes(
+                                    searchText
+                                )
 
-            const transactionDate =
-                transactionDateInput.value;
+                                ||
 
+                                date.includes(
+                                    searchText
+                                )
 
-            if (!description) {
+                                ||
 
-                alert(
-                    "Please enter a description."
-                );
+                                amount.includes(
+                                    searchText
+                                )
 
-                descriptionInput.focus();
-
-                return;
-
-            }
-
-
-            if (
-                !amount ||
-                amount <= 0
-            ) {
-
-                alert(
-                    "Please enter a valid amount."
-                );
-
-                amountInput.focus();
-
-                return;
-
-            }
-
-
-            if (!finalCategory) {
-
-                alert(
-                    "Please select a category."
-                );
-
-                categoryInput.focus();
-
-                return;
-
-            }
-
-
-            if (!type) {
-
-                alert(
-                    "Please select transaction type."
-                );
-
-                typeInput.focus();
-
-                return;
-
-            }
-
-
-            if (!transactionDate) {
-
-                alert(
-                    "Please select a date."
-                );
-
-                transactionDateInput.focus();
-
-                return;
-
-            }
-
-
-            addTransactionBtn.disabled =
-                true;
-
-
-            addTransactionBtn.textContent =
-                "Adding...";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        SUPABASE_URL +
-                        "/rest/v1/transactions",
-                        {
-
-                            method: "POST",
-
-                            headers: {
-                                ...getDatabaseHeaders(),
-
-                                "Prefer":
-                                    "return=representation"
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    user_id:
-                                        session.user.id,
-
-                                    description:
-                                        description,
-
-                                    amount:
-                                        amount,
-
-                                    category:
-                                        finalCategory,
-
-                                    type:
-                                        type,
-
-                                    transaction_date:
-                                        transactionDate
-
-                                })
+                            );
 
                         }
                     );
 
 
-                const text =
-                    await response.text();
+                displayTransactions(
+                    filtered
+                );
+
+            }
+        );
+
+    }
 
 
-                let data =
-                    null;
+    /* ========================================
+       DELETE TRANSACTION
+    ======================================== */
+
+    async function deleteTransaction(id) {
+
+        const confirmed =
+            confirm(
+                "Delete this transaction?"
+            );
 
 
-                if (text) {
+        if (!confirmed) {
+            return;
+        }
 
-                    try {
 
-                        data =
-                            JSON.parse(text);
+        try {
+
+            const {
+                error
+            } =
+                await supabase
+                    .from("transactions")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    )
+                    .eq(
+                        "user_id",
+                        user.id
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            await loadTransactions();
+
+
+        } catch (error) {
+
+            console.error(
+                "Delete error:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Could not delete transaction."
+            );
+
+        }
+
+    }
+
+
+    /* ========================================
+       UPDATE SUMMARY
+    ======================================== */
+
+    function updateSummary(
+        transactions
+    ) {
+
+        let income =
+            0;
+
+        let expense =
+            0;
+
+
+        transactions.forEach(
+            function (transaction) {
+
+                const amount =
+                    Number(
+                        transaction.amount
+                    ) || 0;
+
+
+                const type =
+                    String(
+                        transaction.type ||
+                        "expense"
+                    ).toLowerCase();
+
+
+                if (
+                    type ===
+                    "income"
+                ) {
+
+                    income += amount;
+
+                } else {
+
+                    expense += amount;
+
+                }
+
+            }
+        );
+
+
+        const balance =
+            income - expense;
+
+
+        const incomeElement =
+            document.getElementById(
+                "income"
+            );
+
+
+        const expenseElement =
+            document.getElementById(
+                "expense"
+            );
+
+
+        const balanceElement =
+            document.getElementById(
+                "balance"
+            );
+
+
+        if (incomeElement) {
+
+            incomeElement.textContent =
+                currency(income);
+
+        }
+
+
+        if (expenseElement) {
+
+            expenseElement.textContent =
+                currency(expense);
+
+        }
+
+
+        if (balanceElement) {
+
+            balanceElement.textContent =
+                currency(balance);
+
+        }
+
+
+        const savingMessage =
+            document.getElementById(
+                "savingMessage"
+            );
+
+
+        if (savingMessage) {
+
+            if (balance > 0) {
+
+                savingMessage.textContent =
+                    "You are saving money.";
+
+            } else if (balance < 0) {
+
+                savingMessage.textContent =
+                    "Your expenses are higher than your income.";
+
+            } else {
+
+                savingMessage.textContent =
+                    "Your balance is zero.";
+
+            }
+
+        }
+
+    }
+
+
+    /* ========================================
+       STATEMENT ELEMENTS
+    ======================================== */
+
+    const statementType =
+        document.getElementById(
+            "statementType"
+        );
+
+
+    const statementMonth =
+        document.getElementById(
+            "statementMonth"
+        );
+
+
+    const statementMonthGroup =
+        document.getElementById(
+            "statementMonthGroup"
+        );
+
+
+    const generateStatementBtn =
+        document.getElementById(
+            "generateStatementBtn"
+        );
+
+
+    const downloadStatementBtn =
+        document.getElementById(
+            "downloadStatementBtn"
+        );
+
+
+    const statementMessage =
+        document.getElementById(
+            "statementMessage"
+        );
+
+
+    const statementResult =
+        document.getElementById(
+            "statementResult"
+        );
+
+
+    const statementTitle =
+        document.getElementById(
+            "statementTitle"
+        );
+
+
+    const statementIncome =
+        document.getElementById(
+            "statementIncome"
+        );
+
+
+    const statementExpense =
+        document.getElementById(
+            "statementExpense"
+        );
+
+
+    const statementBalance =
+        document.getElementById(
+            "statementBalance"
+        );
+
+
+    const statementBody =
+        document.getElementById(
+            "statementBody"
+        );
+
+
+    let currentStatementTransactions =
+        [];
+
+
+    let currentStatementTitle =
+        "";
+
+
+    /* ========================================
+       DEFAULT MONTH
+    ======================================== */
+
+    if (statementMonth) {
+
+        statementMonth.value =
+            currentMonth();
+
+    }
+
+
+    /* ========================================
+       STATEMENT TYPE
+    ======================================== */
+
+    if (statementType) {
+
+        statementType.addEventListener(
+            "change",
+            function () {
+
+                if (
+                    statementType.value ===
+                    "monthly"
+                ) {
+
+                    if (statementMonthGroup) {
+
+                        statementMonthGroup.style.display =
+                            "block";
 
                     }
 
-                    catch (parseError) {
+                } else {
 
-                        data =
-                            null;
+                    if (statementMonthGroup) {
+
+                        statementMonthGroup.style.display =
+                            "none";
 
                     }
 
                 }
 
 
-                if (!response.ok) {
+                if (statementResult) {
 
-                    const errorMessage =
-                        data &&
-                        (
-                            data.message ||
-                            data.error_description ||
-                            data.hint ||
-                            data.details
-                        )
-                            ? (
-                                data.message ||
-                                data.error_description ||
-                                data.hint ||
-                                data.details
-                            )
-                            : "Unable to add transaction.";
-
-
-                    throw new Error(
-                        errorMessage
+                    statementResult.classList.add(
+                        "hidden"
                     );
 
                 }
 
 
-                transactionForm.reset();
+                if (downloadStatementBtn) {
+
+                    downloadStatementBtn.classList.add(
+                        "hidden"
+                    );
+
+                }
 
 
-                setTodayDate();
+                if (statementMessage) {
+
+                    statementMessage.textContent =
+                        "";
+
+                }
+
+            }
+        );
+
+    }
 
 
-                customCategoryBox.classList.add(
+    /* ========================================
+       GENERATE STATEMENT
+    ======================================== */
+
+    if (generateStatementBtn) {
+
+        generateStatementBtn.addEventListener(
+            "click",
+            generateStatement
+        );
+
+    }
+
+
+    async function generateStatement() {
+
+        if (!statementType) {
+            return;
+        }
+
+
+        if (statementMessage) {
+
+            statementMessage.textContent =
+                "";
+
+            statementMessage.className =
+                "message";
+
+        }
+
+
+        if (statementResult) {
+
+            statementResult.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (downloadStatementBtn) {
+
+            downloadStatementBtn.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        generateStatementBtn.disabled =
+            true;
+
+
+        generateStatementBtn.textContent =
+            "Generating...";
+
+
+        try {
+
+            let startDate;
+
+            let endDate;
+
+            let title;
+
+
+            /* =================================
+               MONTHLY
+            ================================= */
+
+            if (
+                statementType.value ===
+                "monthly"
+            ) {
+
+                if (
+                    !statementMonth ||
+                    !statementMonth.value
+                ) {
+
+                    throw new Error(
+                        "Please select a month."
+                    );
+
+                }
+
+
+                const parts =
+                    statementMonth.value
+                        .split("-");
+
+
+                const year =
+                    Number(parts[0]);
+
+
+                const month =
+                    Number(parts[1]);
+
+
+                startDate =
+                    `${year}-${String(
+                        month
+                    ).padStart(
+                        2,
+                        "0"
+                    )}-01`;
+
+
+                const lastDay =
+                    new Date(
+                        year,
+                        month,
+                        0
+                    ).getDate();
+
+
+                endDate =
+                    `${year}-${String(
+                        month
+                    ).padStart(
+                        2,
+                        "0"
+                    )}-${String(
+                        lastDay
+                    ).padStart(
+                        2,
+                        "0"
+                    )}`;
+
+
+                const monthName =
+                    new Date(
+                        year,
+                        month - 1,
+                        1
+                    ).toLocaleString(
+                        "en-IN",
+                        {
+                            month: "long"
+                        }
+                    );
+
+
+                title =
+                    `${monthName} ${year} Statement`;
+
+            }
+
+
+            /* =================================
+               WEEKLY
+            ================================= */
+
+            else {
+
+                const range =
+                    getCurrentWeekRange();
+
+
+                startDate =
+                    range.start;
+
+
+                endDate =
+                    range.end;
+
+
+                title =
+                    `Weekly Statement (${formatDate(
+                        startDate
+                    )} to ${formatDate(
+                        endDate
+                    )})`;
+
+            }
+
+
+            /* =================================
+               LOAD STATEMENT
+            ================================= */
+
+            const {
+                data,
+                error
+            } =
+                await supabase
+                    .from("transactions")
+                    .select("*")
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+                    .gte(
+                        "date",
+                        startDate
+                    )
+                    .lte(
+                        "date",
+                        endDate
+                    )
+                    .order(
+                        "date",
+                        {
+                            ascending: false
+                        }
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            const transactions =
+                data || [];
+
+
+            currentStatementTransactions =
+                transactions;
+
+
+            currentStatementTitle =
+                title;
+
+
+            /* =================================
+               CALCULATE TOTALS
+            ================================= */
+
+            let income =
+                0;
+
+
+            let expense =
+                0;
+
+
+            transactions.forEach(
+                function (transaction) {
+
+                    const amount =
+                        Number(
+                            transaction.amount
+                        ) || 0;
+
+
+                    const type =
+                        String(
+                            transaction.type ||
+                            "expense"
+                        ).toLowerCase();
+
+
+                    if (
+                        type ===
+                        "income"
+                    ) {
+
+                        income += amount;
+
+                    } else {
+
+                        expense += amount;
+
+                    }
+
+                }
+            );
+
+
+            const balance =
+                income - expense;
+
+
+            /* =================================
+               SHOW SUMMARY
+            ================================= */
+
+            if (statementTitle) {
+
+                statementTitle.textContent =
+                    title;
+
+            }
+
+
+            if (statementIncome) {
+
+                statementIncome.textContent =
+                    currency(income);
+
+            }
+
+
+            if (statementExpense) {
+
+                statementExpense.textContent =
+                    currency(expense);
+
+            }
+
+
+            if (statementBalance) {
+
+                statementBalance.textContent =
+                    currency(balance);
+
+            }
+
+
+            /* =================================
+               STATEMENT TABLE
+            ================================= */
+
+            if (statementBody) {
+
+                statementBody.innerHTML =
+                    "";
+
+            }
+
+
+            if (!transactions.length) {
+
+                if (statementBody) {
+
+                    statementBody.innerHTML = `
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty"
+                            >
+                                No transactions found for this period.
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+
+            } else {
+
+                transactions.forEach(
+                    function (transaction) {
+
+                        const row =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        const type =
+                            String(
+                                transaction.type ||
+                                "expense"
+                            ).toLowerCase();
+
+
+                        const isIncome =
+                            type ===
+                            "income";
+
+
+                        const amount =
+                            Number(
+                                transaction.amount
+                            ) || 0;
+
+
+                        const formattedAmount =
+                            amount.toLocaleString(
+                                "en-IN",
+                                {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                }
+                            );
+
+
+                        row.innerHTML = `
+
+                            <td>
+                                ${formatDate(
+                                    transaction.date
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    transaction.description ||
+                                    ""
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    transaction.category ||
+                                    ""
+                                )}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="badge ${
+                                        isIncome
+                                            ? "income"
+                                            : "expense"
+                                    }"
+                                >
+
+                                    ${
+                                        isIncome
+                                            ? "Income"
+                                            : "Expense"
+                                    }
+
+                                </span>
+
+                            </td>
+
+                            <td
+                                class="${
+                                    isIncome
+                                        ? "income-text"
+                                        : "expense-text"
+                                }"
+                            >
+
+                                ${
+                                    isIncome
+                                        ? "+"
+                                        : "-"
+                                }₹${formattedAmount}
+
+                            </td>
+
+                        `;
+
+
+                        if (statementBody) {
+
+                            statementBody.appendChild(
+                                row
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            if (statementResult) {
+
+                statementResult.classList.remove(
                     "hidden"
                 );
 
-
-                customCategoryInput.required =
-                    false;
-
-
-                customCategoryInput.value =
-                    "";
-
-
-                categoryInput.value =
-                    "";
-
-
-                typeInput.value =
-                    "expense";
-
-
-                alert(
-                    "Transaction added successfully."
-                );
-
-
-                await loadTransactions();
-
             }
 
-            catch (error) {
 
-                console.error(
-                    "Add transaction error:",
-                    error
-                );
+            if (
+                transactions.length > 0 &&
+                downloadStatementBtn
+            ) {
 
-
-                alert(
-                    "Failed to add transaction: " +
-                    error.message
+                downloadStatementBtn.classList.remove(
+                    "hidden"
                 );
 
             }
 
-            finally {
 
-                addTransactionBtn.disabled =
-                    false;
+        } catch (error) {
+
+            console.error(
+                "Statement error:",
+                error
+            );
 
 
-                addTransactionBtn.textContent =
-                    "Add Transaction";
+            if (statementMessage) {
+
+                statementMessage.textContent =
+                    error.message ||
+                    "Could not generate statement.";
+
+                statementMessage.className =
+                    "message error";
 
             }
+
+        } finally {
+
+            generateStatementBtn.disabled =
+                false;
+
+
+            generateStatementBtn.textContent =
+                "Generate Statement";
 
         }
-    );
-
-}
-
-
-
-// ========================================
-// LOAD TRANSACTIONS
-// ========================================
-
-async function loadTransactions() {
-
-    if (loading) {
-
-        loading.style.display =
-            "block";
 
     }
 
 
-    if (emptyMessage) {
+    /* ========================================
+       DOWNLOAD STATEMENT
+    ======================================== */
 
-        emptyMessage.style.display =
-            "none";
+    if (downloadStatementBtn) {
+
+        downloadStatementBtn.addEventListener(
+            "click",
+            downloadStatement
+        );
 
     }
 
 
-    try {
-
-        const session =
-            getSession();
-
+    function downloadStatement() {
 
         if (
-            !session ||
-            !session.access_token ||
-            !session.user
+            !currentStatementTransactions.length
         ) {
 
-            window.location.href =
-                "auth.html";
+            alert(
+                "There are no transactions to download."
+            );
 
             return;
-
         }
 
 
-        const userId =
-            session.user.id;
+        let csv =
+            "Date,Description,Category,Type,Amount\n";
+
+
+        currentStatementTransactions.forEach(
+            function (transaction) {
+
+                const description =
+                    String(
+                        transaction.description ||
+                        ""
+                    )
+                    .replaceAll(
+                        '"',
+                        '""'
+                    );
+
+
+                const category =
+                    String(
+                        transaction.category ||
+                        ""
+                    )
+                    .replaceAll(
+                        '"',
+                        '""'
+                    );
+
+
+                const type =
+                    String(
+                        transaction.type ||
+                        "expense"
+                    ).toLowerCase();
+
+
+                const typeName =
+                    type === "income"
+                        ? "Income"
+                        : "Expense";
+
+
+                const amount =
+                    Number(
+                        transaction.amount
+                    ).toFixed(2);
+
+
+                csv +=
+                    `"${transaction.date}",` +
+                    `"${description}",` +
+                    `"${category}",` +
+                    `"${typeName}",` +
+                    `"${amount}"\n`;
+
+            }
+        );
+
+
+        const blob =
+            new Blob(
+                [csv],
+                {
+                    type:
+                        "text/csv;charset=utf-8;"
+                }
+            );
 
 
         const url =
-            SUPABASE_URL +
-            "/rest/v1/transactions" +
-            "?select=*" +
-            "&user_id=eq." +
-            encodeURIComponent(userId) +
-            "&order=transaction_date.desc,created_at.desc";
-
-
-        const response =
-            await fetch(
-                url,
-                {
-
-                    method: "GET",
-
-                    headers:
-                        getDatabaseHeaders()
-
-                }
+            URL.createObjectURL(
+                blob
             );
 
 
-        const text =
-            await response.text();
+        const link =
+            document.createElement(
+                "a"
+            );
 
 
-        let data =
-            [];
+        link.href =
+            url;
 
 
-        if (text) {
-
-            try {
-
-                data =
-                    JSON.parse(text);
-
-            }
-
-            catch (parseError) {
-
-                throw new Error(
-                    "Invalid response from database."
-                );
-
-            }
-
-        }
-
-
-        if (!response.ok) {
-
-            const errorMessage =
-                data &&
-                (
-                    data.message ||
-                    data.error_description ||
-                    data.hint ||
-                    data.details
+        link.download =
+            currentStatementTitle
+                .replaceAll(
+                    " ",
+                    "_"
                 )
-                    ? (
-                        data.message ||
-                        data.error_description ||
-                        data.hint ||
-                        data.details
-                    )
-                    : "Unable to load transactions.";
+                .replaceAll(
+                    "(",
+                    ""
+                )
+                .replaceAll(
+                    ")",
+                    ""
+                )
+                + ".csv";
 
 
-            throw new Error(
-                errorMessage
-            );
-
-        }
-
-
-        transactions =
-            Array.isArray(data)
-                ? data
-                : [];
-
-
-        displayTransactions();
-
-        updateSummary();
-
-        updateExpenseChart();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Load transactions error:",
-            error
+        document.body.appendChild(
+            link
         );
 
 
-        if (loading) {
-
-            loading.style.display =
-                "none";
-
-        }
+        link.click();
 
 
-        alert(
-            "Failed to load transactions: " +
-            error.message
+        document.body.removeChild(
+            link
+        );
+
+
+        URL.revokeObjectURL(
+            url
         );
 
     }
 
-}
+
+    /* ========================================
+       CURRENT WEEK
+    ======================================== */
+
+    function getCurrentWeekRange() {
+
+        const now =
+            new Date();
 
 
+        const day =
+            now.getDay();
 
-// ========================================
-// DISPLAY TRANSACTIONS
-// ========================================
 
-function displayTransactions() {
+        const mondayOffset =
+            day === 0
+                ? -6
+                : 1 - day;
 
-    if (!transactionList) {
 
-        return;
+        const monday =
+            new Date(now);
+
+
+        monday.setDate(
+            now.getDate() +
+            mondayOffset
+        );
+
+
+        const sunday =
+            new Date(monday);
+
+
+        sunday.setDate(
+            monday.getDate() +
+            6
+        );
+
+
+        return {
+
+            start:
+                toDateString(
+                    monday
+                ),
+
+            end:
+                toDateString(
+                    sunday
+                )
+
+        };
 
     }
 
 
-    transactionList.innerHTML =
-        "";
+    /* ========================================
+       DATE FUNCTIONS
+    ======================================== */
 
+    function getToday() {
 
-    if (loading) {
-
-        loading.style.display =
-            "none";
+        return toDateString(
+            new Date()
+        );
 
     }
 
 
-    if (
-        !transactions ||
-        transactions.length === 0
+    function toDateString(
+        date
     ) {
 
-        if (emptyMessage) {
-
-            emptyMessage.style.display =
-                "block";
-
-        }
+        const year =
+            date.getFullYear();
 
 
-        return;
-
-    }
-
-
-    if (emptyMessage) {
-
-        emptyMessage.style.display =
-            "none";
-
-    }
-
-
-    transactions.forEach(
-        function (transaction) {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            const descriptionCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            descriptionCell.textContent =
-                transaction.description ||
-                "";
-
-
-            const categoryCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            categoryCell.textContent =
-                transaction.category ||
-                "";
-
-
-            const typeCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            typeCell.textContent =
-                transaction.type ===
-                "income"
-                    ? "Income"
-                    : "Expense";
-
-
-            typeCell.className =
-                transaction.type ===
-                "income"
-                    ? "income"
-                    : "expense";
-
-
-            const dateCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            dateCell.textContent =
-                formatDate(
-                    transaction.transaction_date
-                );
-
-
-            const amountCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            const amount =
-                Number(
-                    transaction.amount
-                ) || 0;
-
-
-            amountCell.textContent =
-                (
-                    transaction.type ===
-                    "income"
-                        ? "+ ₹"
-                        : "- ₹"
-                ) +
-                amount.toFixed(2);
-
-
-            amountCell.className =
-                transaction.type ===
-                "income"
-                    ? "income"
-                    : "expense";
-
-
-            const actionCell =
-                document.createElement(
-                    "td"
-                );
-
-
-            const deleteButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            deleteButton.type =
-                "button";
-
-
-            deleteButton.className =
-                "delete-btn";
-
-
-            deleteButton.textContent =
-                "Delete";
-
-
-            deleteButton.addEventListener(
-                "click",
-                function () {
-
-                    deleteTransaction(
-                        transaction.id
-                    );
-
-                }
+        const month =
+            String(
+                date.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
             );
 
 
-            actionCell.appendChild(
-                deleteButton
+        const day =
+            String(
+                date.getDate()
+            ).padStart(
+                2,
+                "0"
             );
 
 
-            row.appendChild(
-                descriptionCell
-            );
-
-
-            row.appendChild(
-                categoryCell
-            );
-
-
-            row.appendChild(
-                typeCell
-            );
-
-
-            row.appendChild(
-                dateCell
-            );
-
-
-            row.appendChild(
-                amountCell
-            );
-
-
-            row.appendChild(
-                actionCell
-            );
-
-
-            transactionList.appendChild(
-                row
-            );
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// UPDATE SUMMARY
-// ========================================
-
-function updateSummary() {
-
-    let totalIncome =
-        0;
-
-
-    let totalExpense =
-        0;
-
-
-    transactions.forEach(
-        function (transaction) {
-
-            const amount =
-                Number(
-                    transaction.amount
-                ) || 0;
-
-
-            if (
-                transaction.type ===
-                "income"
-            ) {
-
-                totalIncome +=
-                    amount;
-
-            }
-
-            else {
-
-                totalExpense +=
-                    amount;
-
-            }
-
-        }
-    );
-
-
-    const balance =
-        totalIncome -
-        totalExpense;
-
-
-    if (totalIncomeElement) {
-
-        totalIncomeElement.textContent =
-            formatCurrency(
-                totalIncome
-            );
-
-    }
-
-
-    if (totalExpenseElement) {
-
-        totalExpenseElement.textContent =
-            formatCurrency(
-                totalExpense
-            );
-
-    }
-
-
-    if (balanceElement) {
-
-        balanceElement.textContent =
-            formatCurrency(
-                balance
-            );
-
-    }
-
-}
-
-
-
-// ========================================
-// EXPENSE CHART
-// ========================================
-
-function updateExpenseChart() {
-
-    if (!expenseChartCanvas) {
-
-        return;
-
-    }
-
-
-    const categoryTotals =
-        {};
-
-
-    transactions.forEach(
-        function (transaction) {
-
-            if (
-                transaction.type !==
-                "expense"
-            ) {
-
-                return;
-
-            }
-
-
-            const category =
-                transaction.category ||
-                "Other";
-
-
-            const amount =
-                Number(
-                    transaction.amount
-                ) || 0;
-
-
-            if (amount <= 0) {
-
-                return;
-
-            }
-
-
-            if (
-                !categoryTotals[category]
-            ) {
-
-                categoryTotals[category] =
-                    0;
-
-            }
-
-
-            categoryTotals[category] +=
-                amount;
-
-        }
-    );
-
-
-    const categories =
-        Object.keys(
-            categoryTotals
+        return (
+            year +
+            "-" +
+            month +
+            "-" +
+            day
         );
 
+    }
 
-    const values =
-        categories.map(
-            function (category) {
 
-                return categoryTotals[
-                    category
-                ];
+    function currentMonth() {
 
-            }
+        const date =
+            new Date();
+
+
+        return (
+            date.getFullYear() +
+            "-" +
+            String(
+                date.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            )
         );
 
-
-    const totalExpense =
-        values.reduce(
-            function (
-                total,
-                amount
-            ) {
-
-                return total + amount;
-
-            },
-            0
-        );
+    }
 
 
-    updateChartTotal(
-        totalExpense
-    );
-
-
-    if (
-        categories.length ===
-        0 ||
-        totalExpense <= 0
+    function formatDate(
+        value
     ) {
 
-        if (chartEmpty) {
-
-            chartEmpty.style.display =
-                "block";
-
+        if (!value) {
+            return "-";
         }
 
 
-        if (chartLegend) {
-
-            chartLegend.innerHTML =
-                "";
-
-        }
-
-
-        if (expenseChart) {
-
-            expenseChart.destroy();
-
-            expenseChart =
-                null;
-
-        }
-
-
-        if (chartCenter) {
-
-            chartCenter.innerHTML =
-                `
-                    <strong>₹0.00</strong>
-                    <span>Total Expense</span>
-                `;
-
-        }
-
-
-        return;
-
-    }
-
-
-    if (chartEmpty) {
-
-        chartEmpty.style.display =
-            "none";
-
-    }
-
-
-    const chartColors =
-        generateChartColors(
-            categories.length
-        );
-
-
-    if (expenseChart) {
-
-        expenseChart.destroy();
-
-        expenseChart =
-            null;
-
-    }
-
-
-    expenseChart =
-        new Chart(
-            expenseChartCanvas,
-            {
-
-                type: "doughnut",
-
-                data: {
-
-                    labels:
-                        categories,
-
-                    datasets: [
-
-                        {
-
-                            data:
-                                values,
-
-                            backgroundColor:
-                                chartColors,
-
-                            borderColor:
-                                "#ffffff",
-
-                            borderWidth:
-                                3,
-
-                            hoverOffset:
-                                8
-
-                        }
-
-                    ]
-
-                },
-
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-                    cutout:
-                        "68%",
-
-                    plugins: {
-
-                        legend: {
-
-                            display:
-                                false
-
-                        },
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function (
-                                        context
-                                    ) {
-
-                                        const value =
-                                            Number(
-                                                context.raw
-                                            ) || 0;
-
-
-                                        const percentage =
-                                            totalExpense >
-                                            0
-                                                ? (
-                                                    value /
-                                                    totalExpense
-                                                ) *
-                                                100
-                                                : 0;
-
-
-                                        return (
-                                            " " +
-                                            context.label +
-                                            ": ₹" +
-                                            value.toFixed(
-                                                2
-                                            ) +
-                                            " (" +
-                                            percentage.toFixed(
-                                                1
-                                            ) +
-                                            "%)"
-                                        );
-
-                                    }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-        );
-
-
-    updateChartCenter(
-        totalExpense
-    );
-
-
-    updateChartLegend(
-        categories,
-        values,
-        chartColors,
-        totalExpense
-    );
-
-}
-
-
-
-// ========================================
-// UPDATE CHART TOTAL
-// ========================================
-
-function updateChartTotal(
-    totalExpense
-) {
-
-    if (chartTotal) {
-
-        chartTotal.textContent =
-            formatCurrency(
-                totalExpense
-            );
-
-    }
-
-}
-
-
-
-// ========================================
-// UPDATE CHART CENTER
-// ========================================
-
-function updateChartCenter(
-    totalExpense
-) {
-
-    if (!chartCenter) {
-
-        return;
-
-    }
-
-
-    chartCenter.innerHTML =
-        `
-            <strong>
-                ${formatCurrency(totalExpense)}
-            </strong>
-
-            <span>
-                Total Expense
-            </span>
-        `;
-
-}
-
-
-
-// ========================================
-// UPDATE CHART LEGEND
-// ========================================
-
-function updateChartLegend(
-    categories,
-    values,
-    chartColors,
-    totalExpense
-) {
-
-    if (!chartLegend) {
-
-        return;
-
-    }
-
-
-    chartLegend.innerHTML =
-        "";
-
-
-    categories.forEach(
-        function (
-            category,
-            index
-        ) {
-
-            const value =
-                values[index];
-
-
-            const percentage =
-                totalExpense >
-                0
-                    ? (
-                        value /
-                        totalExpense
-                    ) *
-                    100
-                    : 0;
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "chart-legend-item";
-
-
-            const left =
-                document.createElement(
-                    "div"
-                );
-
-
-            left.className =
-                "chart-legend-left";
-
-
-            const dot =
-                document.createElement(
-                    "span"
-                );
-
-
-            dot.className =
-                "chart-legend-dot";
-
-
-            dot.style.backgroundColor =
-                chartColors[index];
-
-
-            const name =
-                document.createElement(
-                    "span"
-                );
-
-
-            name.className =
-                "chart-legend-name";
-
-
-            name.textContent =
-                category;
-
-
-            left.appendChild(
-                dot
-            );
-
-
-            left.appendChild(
-                name
-            );
-
-
-            const right =
-                document.createElement(
-                    "span"
-                );
-
-
-            right.className =
-                "chart-legend-value";
-
-
-            right.textContent =
-                "₹" +
-                value.toFixed(
-                    2
-                ) +
-                " (" +
-                percentage.toFixed(
-                    1
-                ) +
-                "%)";
-
-
-            item.appendChild(
-                left
-            );
-
-
-            item.appendChild(
-                right
-            );
-
-
-            chartLegend.appendChild(
-                item
-            );
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// GENERATE CHART COLORS
-// ========================================
-
-function generateChartColors(
-    count
-) {
-
-    const colors = [];
-
-
-    const predefinedColors = [
-
-        "#16a085",
-
-        "#3498db",
-
-        "#9b59b6",
-
-        "#f39c12",
-
-        "#e74c3c",
-
-        "#1abc9c",
-
-        "#34495e",
-
-        "#e67e22",
-
-        "#2ecc71",
-
-        "#8e44ad",
-
-        "#2980b9",
-
-        "#d35400"
-
-    ];
-
-
-    for (
-        let index = 0;
-        index < count;
-        index++
-    ) {
-
-        colors.push(
-            predefinedColors[
-                index %
-                predefinedColors.length
-            ]
-        );
-
-    }
-
-
-    return colors;
-
-}
-
-
-
-// ========================================
-// DELETE TRANSACTION
-// ========================================
-
-async function deleteTransaction(
-    transactionId
-) {
-
-    if (!transactionId) {
-
-        alert(
-            "Transaction ID is missing."
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete this transaction?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const session =
-            getSession();
+        const parts =
+            String(value)
+                .split("-");
 
 
         if (
-            !session ||
-            !session.access_token
+            parts.length === 3
         ) {
 
-            window.location.href =
-                "auth.html";
-
-            return;
+            return (
+                parts[2] +
+                "-" +
+                parts[1] +
+                "-" +
+                parts[0]
+            );
 
         }
 
 
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/rest/v1/transactions" +
-                "?id=eq." +
-                encodeURIComponent(
-                    transactionId
-                ),
+        return value;
+
+    }
+
+
+    /* ========================================
+       CURRENCY
+    ======================================== */
+
+    function currency(
+        value
+    ) {
+
+        return (
+            "₹" +
+            Number(
+                value
+            ).toLocaleString(
+                "en-IN",
                 {
-
-                    method: "DELETE",
-
-                    headers:
-                        getDatabaseHeaders()
-
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 }
-            );
-
-
-        const text =
-            await response.text();
-
-
-        let data =
-            null;
-
-
-        if (text) {
-
-            try {
-
-                data =
-                    JSON.parse(text);
-
-            }
-
-            catch (error) {
-
-                data =
-                    null;
-
-            }
-
-        }
-
-
-        if (!response.ok) {
-
-            const errorMessage =
-                data &&
-                (
-                    data.message ||
-                    data.error ||
-                    data.hint ||
-                    data.details
-                )
-                    ? (
-                        data.message ||
-                        data.error ||
-                        data.hint ||
-                        data.details
-                    )
-                    : "Unable to delete transaction.";
-
-
-            throw new Error(
-                errorMessage
-            );
-
-        }
-
-
-        await loadTransactions();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Delete transaction error:",
-            error
-        );
-
-
-        alert(
-            "Failed to delete transaction: " +
-            error.message
+            )
         );
 
     }
 
-}
+
+    /* ========================================
+       HTML SECURITY
+    ======================================== */
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value
+        )
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+    }
 
 
+    /* ========================================
+       MESSAGE
+    ======================================== */
 
-// ========================================
-// REFRESH
-// ========================================
+    function showTransactionMessage(
+        text,
+        type
+    ) {
 
-if (refreshBtn) {
-
-    refreshBtn.addEventListener(
-        "click",
-        async function () {
-
-            refreshBtn.disabled =
-                true;
-
-
-            refreshBtn.textContent =
-                "Refreshing...";
+        if (!transactionMessage) {
+            return;
+        }
 
 
-            try {
+        transactionMessage.textContent =
+            text;
+
+
+        transactionMessage.className =
+            "message " + type;
+
+    }
+
+
+    function clearTransactionMessage() {
+
+        if (!transactionMessage) {
+            return;
+        }
+
+
+        transactionMessage.textContent =
+            "";
+
+
+        transactionMessage.className =
+            "message";
+
+    }
+
+
+    /* ========================================
+       REFRESH
+    ======================================== */
+
+    if (refreshBtn) {
+
+        refreshBtn.addEventListener(
+            "click",
+            async function () {
 
                 await loadTransactions();
 
             }
-
-            finally {
-
-                refreshBtn.disabled =
-                    false;
-
-
-                refreshBtn.textContent =
-                    "Refresh";
-
-            }
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// LOGOUT
-// ========================================
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        function () {
-
-            const confirmed =
-                confirm(
-                    "Are you sure you want to logout?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            removeSession();
-
-
-            window.location.href =
-                "auth.html";
-
-        }
-    );
-
-}
-
-
-
-// ========================================
-// FORMAT CURRENCY
-// ========================================
-
-function formatCurrency(
-    amount
-) {
-
-    const number =
-        Number(amount) || 0;
-
-
-    return (
-        "₹" +
-        number.toLocaleString(
-            "en-IN",
-            {
-                minimumFractionDigits: 2,
-
-                maximumFractionDigits: 2
-            }
-        )
-    );
-
-}
-
-
-
-// ========================================
-// FORMAT DATE
-// ========================================
-
-function formatDate(
-    dateValue
-) {
-
-    if (!dateValue) {
-
-        return "";
-
-    }
-
-
-    const date =
-        new Date(
-            dateValue +
-            "T00:00:00"
         );
 
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return dateValue;
-
     }
 
 
-    return date.toLocaleDateString(
-        "en-IN",
-        {
+    /* ========================================
+       INITIAL LOAD
+    ======================================== */
 
-            day: "2-digit",
+    await loadTransactions();
 
-            month: "short",
 
-            year: "numeric"
+    /* ========================================
+       AUTH STATE
+    ======================================== */
+
+    supabase.auth.onAuthStateChange(
+        function (
+            event,
+            currentSession
+        ) {
+
+            if (
+                event ===
+                "SIGNED_OUT"
+            ) {
+
+                window.location.replace(
+                    "auth.html"
+                );
+
+            }
 
         }
     );
 
-}
+});
