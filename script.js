@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    /* ========================================
-       SUPABASE
-    ======================================== */
+    // ========================================
+    // SUPABASE
+    // ========================================
 
     const supabase = window.supabaseClient;
 
@@ -12,26 +12,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       CHECK LOGIN
-    ======================================== */
+    // ========================================
+    // CHECK LOGIN
+    // ========================================
 
     const {
         data: { session },
         error: sessionError
     } = await supabase.auth.getSession();
 
-    if (sessionError) {
-        console.error(
-            "Session error:",
-            sessionError
-        );
-
-        window.location.replace("auth.html");
-        return;
-    }
-
-    if (!session || !session.user) {
+    if (sessionError || !session) {
         window.location.replace("auth.html");
         return;
     }
@@ -39,9 +29,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const user = session.user;
 
 
-    /* ========================================
-       PROFILE
-    ======================================== */
+    // ========================================
+    // USER PROFILE
+    // ========================================
 
     const profileBtn =
         document.getElementById("profileBtn");
@@ -59,15 +49,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("profileEmail");
 
     const profileDetailName =
-        document.getElementById(
-            "profileDetailName"
-        );
+        document.getElementById("profileDetailName");
 
     const profileDetailEmail =
-        document.getElementById(
-            "profileDetailEmail"
-        );
-
+        document.getElementById("profileDetailEmail");
 
     const userName =
         user.user_metadata?.full_name ||
@@ -75,47 +60,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         user.email?.split("@")[0] ||
         "User";
 
-
     const userEmail =
         user.email || "";
 
 
     if (profileName) {
-        profileName.textContent =
-            userName;
+        profileName.textContent = userName;
     }
 
     if (profileEmail) {
-        profileEmail.textContent =
-            userEmail;
+        profileEmail.textContent = userEmail;
     }
 
     if (profileDetailName) {
-        profileDetailName.textContent =
-            userName;
+        profileDetailName.textContent = userName;
     }
 
     if (profileDetailEmail) {
-        profileDetailEmail.textContent =
-            userEmail;
+        profileDetailEmail.textContent = userEmail;
     }
 
 
-    /* ========================================
-       PROFILE MENU
-    ======================================== */
+    // ========================================
+    // PROFILE MENU
+    // ========================================
 
     if (profileBtn && profileMenu) {
 
         profileBtn.addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 event.stopPropagation();
 
-                profileMenu.classList.toggle(
-                    "show"
-                );
+                profileMenu.classList.toggle("show");
 
             }
         );
@@ -123,20 +101,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 if (
-                    !profileMenu.contains(
-                        event.target
-                    ) &&
-                    !profileBtn.contains(
-                        event.target
-                    )
+                    !profileMenu.contains(event.target) &&
+                    !profileBtn.contains(event.target)
                 ) {
 
-                    profileMenu.classList.remove(
-                        "show"
-                    );
+                    profileMenu.classList.remove("show");
 
                 }
 
@@ -146,15 +118,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       LOGOUT
-    ======================================== */
+    // ========================================
+    // LOGOUT
+    // ========================================
 
     if (logoutBtn) {
 
         logoutBtn.addEventListener(
             "click",
-            async function () {
+            async () => {
 
                 logoutBtn.disabled = true;
 
@@ -162,30 +134,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "Logging out...";
 
 
-                const {
-                    error
-                } =
+                const { error } =
                     await supabase.auth.signOut();
 
 
                 if (error) {
 
-                    console.error(
-                        "Logout error:",
-                        error
-                    );
+                    console.error(error);
 
                     alert(
                         "Logout failed. Please try again."
                     );
 
-                    logoutBtn.disabled =
-                        false;
+                    logoutBtn.disabled = false;
 
                     logoutBtn.textContent =
                         "Logout";
 
                     return;
+
                 }
 
 
@@ -199,41 +166,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       TRANSACTION ELEMENTS
-    ======================================== */
+    // ========================================
+    // TRANSACTION ELEMENTS
+    // ========================================
 
-    const transactionForm =
+    const form =
         document.getElementById(
             "transactionForm"
         );
 
-    const descriptionInput =
+    const description =
         document.getElementById(
             "description"
         );
 
-    const amountInput =
+    const amount =
         document.getElementById(
             "amount"
         );
 
-    const categoryInput =
+    const category =
         document.getElementById(
             "category"
         );
 
-    const typeInput =
+    const type =
         document.getElementById(
             "type"
         );
 
-    const dateInput =
+    const date =
         document.getElementById(
             "date"
         );
 
-    const addTransactionBtn =
+    const addBtn =
         document.getElementById(
             "addTransactionBtn"
         );
@@ -248,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "transactionsBody"
         );
 
-    const loadingTransactions =
+    const loading =
         document.getElementById(
             "loadingTransactions"
         );
@@ -259,140 +226,125 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
-    /* ========================================
-       SEARCH ELEMENT
-    ======================================== */
+    // ========================================
+    // IMPORTANT
+    // SEARCH
+    // ========================================
 
-    const transactionSearch =
+    // HTML uses:
+    // id="transactionSearch"
+
+    const searchInput =
         document.getElementById(
             "transactionSearch"
         );
 
 
-    /* ========================================
-       STORE ALL TRANSACTIONS
-    ======================================== */
+    // ========================================
+    // SUMMARY ELEMENTS
+    // ========================================
+
+    const balanceEl =
+        document.getElementById(
+            "balance"
+        );
+
+    const incomeEl =
+        document.getElementById(
+            "income"
+        );
+
+    const expenseEl =
+        document.getElementById(
+            "expense"
+        );
+
+    const savingMessage =
+        document.getElementById(
+            "savingMessage"
+        );
+
+
+    // ========================================
+    // TRANSACTION DATA
+    // ========================================
 
     let allTransactions = [];
 
 
-    /* ========================================
-       SET TODAY'S DATE
-    ======================================== */
+    // ========================================
+    // DEFAULT DATE
+    // ========================================
 
-    if (dateInput) {
-
-        dateInput.value =
-            getToday();
-
+    if (date) {
+        date.value = today();
     }
 
 
-    /* ========================================
-       ADD TRANSACTION
-    ======================================== */
+    // ========================================
+    // ADD TRANSACTION
+    // ========================================
 
-    if (transactionForm) {
+    if (form) {
 
-        transactionForm.addEventListener(
+        form.addEventListener(
             "submit",
-            async function (event) {
+            async event => {
 
                 event.preventDefault();
-
 
                 clearTransactionMessage();
 
 
-                const description =
-                    descriptionInput
-                        ? descriptionInput.value.trim()
+                const descriptionValue =
+                    description
+                        ? description.value.trim()
                         : "";
 
-
-                const amount =
-                    amountInput
-                        ? Number(
-                            amountInput.value
-                        )
+                const amountValue =
+                    amount
+                        ? Number(amount.value)
                         : 0;
 
-
-                const category =
-                    categoryInput
-                        ? categoryInput.value
+                const categoryValue =
+                    category
+                        ? category.value
                         : "";
 
-
-                const type =
-                    typeInput
-                        ? typeInput.value
+                const typeValue =
+                    type
+                        ? type.value
                         : "expense";
 
-
-                const date =
-                    dateInput
-                        ? dateInput.value
+                const dateValue =
+                    date
+                        ? date.value
                         : "";
-
-
-                /* Validation */
-
-                if (!description) {
-
-                    showTransactionMessage(
-                        "Please enter a description.",
-                        "error"
-                    );
-
-                    return;
-                }
 
 
                 if (
-                    !amount ||
-                    amount <= 0
+                    !descriptionValue ||
+                    !amountValue ||
+                    amountValue <= 0 ||
+                    !categoryValue ||
+                    !dateValue
                 ) {
 
                     showTransactionMessage(
-                        "Please enter a valid amount.",
+                        "Please fill all fields with valid values.",
                         "error"
                     );
 
                     return;
+
                 }
 
 
-                if (!category) {
+                if (addBtn) {
 
-                    showTransactionMessage(
-                        "Please select a category.",
-                        "error"
-                    );
+                    addBtn.disabled = true;
 
-                    return;
-                }
-
-
-                if (!date) {
-
-                    showTransactionMessage(
-                        "Please select a date.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                /* Disable button */
-
-                if (addTransactionBtn) {
-
-                    addTransactionBtn.disabled =
-                        true;
-
-                    addTransactionBtn.textContent =
+                    addBtn.textContent =
                         "Adding...";
 
                 }
@@ -411,19 +363,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     user.id,
 
                                 description:
-                                    description,
+                                    descriptionValue,
 
                                 amount:
-                                    amount,
+                                    amountValue,
 
                                 category:
-                                    category,
+                                    categoryValue,
 
                                 type:
-                                    type,
+                                    typeValue,
 
                                 date:
-                                    date
+                                    dateValue
 
                             });
 
@@ -439,22 +391,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     );
 
 
-                    transactionForm.reset();
+                    form.reset();
 
 
-                    if (dateInput) {
-
-                        dateInput.value =
-                            getToday();
-
+                    if (date) {
+                        date.value = today();
                     }
 
 
-                    if (typeInput) {
-
-                        typeInput.value =
-                            "expense";
-
+                    if (type) {
+                        type.value = "expense";
                     }
 
 
@@ -475,15 +421,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "error"
                     );
 
-
                 } finally {
 
-                    if (addTransactionBtn) {
+                    if (addBtn) {
 
-                        addTransactionBtn.disabled =
-                            false;
+                        addBtn.disabled = false;
 
-                        addTransactionBtn.textContent =
+                        addBtn.textContent =
                             "Add Transaction";
 
                     }
@@ -496,27 +440,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       LOAD TRANSACTIONS
-    ======================================== */
+    // ========================================
+    // LOAD TRANSACTIONS
+    // ========================================
 
     async function loadTransactions() {
 
-        if (loadingTransactions) {
+        if (loading) {
 
-            loadingTransactions.style.display =
+            loading.style.display =
                 "block";
 
-            loadingTransactions.textContent =
+            loading.textContent =
                 "Loading transactions...";
-
-        }
-
-
-        if (transactionsBody) {
-
-            transactionsBody.innerHTML =
-                "";
 
         }
 
@@ -557,9 +493,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 data || [];
 
 
-            if (loadingTransactions) {
+            if (loading) {
 
-                loadingTransactions.style.display =
+                loading.style.display =
                     "none";
 
             }
@@ -569,8 +505,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 allTransactions
             );
 
-
             updateSummary(
+                allTransactions
+            );
+
+            updateChart(
                 allTransactions
             );
 
@@ -583,33 +522,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
 
-            allTransactions = [];
+            if (loading) {
 
+                loading.style.display =
+                    "block";
 
-            if (loadingTransactions) {
-
-                loadingTransactions.textContent =
+                loading.textContent =
                     "Could not load transactions.";
-
-            }
-
-
-            if (transactionsBody) {
-
-                transactionsBody.innerHTML = `
-
-                    <tr>
-
-                        <td
-                            colspan="6"
-                            class="empty"
-                        >
-                            Could not load transactions.
-                        </td>
-
-                    </tr>
-
-                `;
 
             }
 
@@ -618,32 +537,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       DISPLAY TRANSACTIONS
-    ======================================== */
+    // ========================================
+    // DISPLAY TRANSACTIONS
+    // ========================================
 
-    function displayTransactions(
-        transactions
-    ) {
+    function displayTransactions(items) {
 
         if (!transactionsBody) {
-
-            console.error(
-                "transactionsBody not found."
-            );
-
             return;
         }
 
 
-        transactionsBody.innerHTML =
-            "";
+        transactionsBody.innerHTML = "";
 
 
-        if (
-            !transactions ||
-            transactions.length === 0
-        ) {
+        if (!items || !items.length) {
 
             transactionsBody.innerHTML = `
 
@@ -661,75 +569,47 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
 
             return;
+
         }
 
 
-        transactions.forEach(
-            function (transaction) {
+        items.forEach(
+            transaction => {
 
-                const row =
+                const tr =
                     document.createElement(
                         "tr"
                     );
 
 
-                const transactionType =
-                    String(
-                        transaction.type ||
-                        "expense"
-                    ).toLowerCase();
-
-
                 const isIncome =
-                    transactionType ===
+                    String(
+                        transaction.type || ""
+                    ).toLowerCase() ===
                     "income";
 
 
-                const description =
-                    escapeHtml(
-                        transaction.description ||
-                        ""
-                    );
-
-
-                const category =
-                    escapeHtml(
-                        transaction.category ||
-                        ""
-                    );
-
-
-                const date =
-                    formatDate(
-                        transaction.date
-                    );
-
-
-                const amount =
+                const amountValue =
                     Number(
                         transaction.amount
                     ) || 0;
 
 
-                const formattedAmount =
-                    amount.toLocaleString(
-                        "en-IN",
-                        {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }
-                    );
-
-
-                row.innerHTML = `
+                tr.innerHTML = `
 
                     <td>
-                        ${description}
+                        ${escapeHtml(
+                            transaction.description
+                        )}
                     </td>
 
+
                     <td>
-                        ${category}
+                        ${escapeHtml(
+                            transaction.category
+                        )}
                     </td>
+
 
                     <td>
 
@@ -751,9 +631,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     </td>
 
+
                     <td>
-                        ${date}
+                        ${formatDate(
+                            transaction.date
+                        )}
                     </td>
+
 
                     <td
                         class="${
@@ -767,21 +651,41 @@ document.addEventListener("DOMContentLoaded", async () => {
                             isIncome
                                 ? "+"
                                 : "-"
-                        }₹${formattedAmount}
+                        }₹${amountValue.toLocaleString(
+                            "en-IN",
+                            {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }
+                        )}
 
                     </td>
 
+
                     <td>
 
-                        <button
-                            type="button"
-                            class="delete-btn"
-                            data-id="${
-                                transaction.id
-                            }"
+                        <div
+                            class="transaction-actions"
                         >
-                            Delete
-                        </button>
+
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-id="${transaction.id}"
+                            >
+                                Edit
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                data-id="${transaction.id}"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
 
                     </td>
 
@@ -789,74 +693,93 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
                 transactionsBody.appendChild(
-                    row
+                    tr
                 );
 
             }
         );
 
 
-        /* ====================================
-           DELETE BUTTONS
-        ==================================== */
+        // ====================================
+        // EDIT BUTTON
+        // ====================================
 
-        const deleteButtons =
-            transactionsBody.querySelectorAll(
-                ".delete-btn"
+        transactionsBody
+            .querySelectorAll(".edit-btn")
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            openEditModal(
+                                button.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
             );
 
 
-        deleteButtons.forEach(
-            function (button) {
+        // ====================================
+        // DELETE BUTTON
+        // ====================================
 
-                button.addEventListener(
-                    "click",
-                    function () {
+        transactionsBody
+            .querySelectorAll(".delete-btn")
+            .forEach(
+                button => {
 
-                        deleteTransaction(
-                            button.dataset.id
-                        );
+                    button.addEventListener(
+                        "click",
+                        () => {
 
-                    }
-                );
+                            deleteTransaction(
+                                button.dataset.id
+                            );
 
-            }
-        );
+                        }
+                    );
+
+                }
+            );
 
     }
 
 
-    /* ========================================
-       SEARCH TRANSACTIONS
-    ======================================== */
+    // ========================================
+    // SEARCH
+    // ========================================
 
-    if (transactionSearch) {
+    if (searchInput) {
 
-        transactionSearch.addEventListener(
+        searchInput.addEventListener(
             "input",
-            function () {
+            () => {
 
-                const searchText =
-                    transactionSearch.value
+                const text =
+                    searchInput.value
                         .trim()
                         .toLowerCase();
 
 
-                /* Empty search = show all */
-
-                if (!searchText) {
+                if (!text) {
 
                     displayTransactions(
                         allTransactions
                     );
 
                     return;
+
                 }
 
 
                 const filtered =
                     allTransactions.filter(
-                        function (transaction) {
+                        transaction => {
 
                             const description =
                                 String(
@@ -864,63 +787,90 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     ""
                                 ).toLowerCase();
 
-
                             const category =
                                 String(
                                     transaction.category ||
                                     ""
                                 ).toLowerCase();
 
-
-                            const type =
+                            const transactionType =
                                 String(
                                     transaction.type ||
                                     ""
                                 ).toLowerCase();
 
-
-                            const date =
+                            const rawDate =
                                 String(
                                     transaction.date ||
                                     ""
                                 ).toLowerCase();
 
+                            const displayDate =
+                                formatDate(
+                                    transaction.date
+                                ).toLowerCase();
 
-                            const amount =
+                            const amountText =
                                 String(
                                     transaction.amount ||
                                     ""
                                 ).toLowerCase();
 
+                            const formattedAmount =
+                                Number(
+                                    transaction.amount ||
+                                    0
+                                )
+                                    .toLocaleString(
+                                        "en-IN",
+                                        {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        }
+                                    )
+                                    .toLowerCase();
+
 
                             return (
 
                                 description.includes(
-                                    searchText
+                                    text
                                 )
 
                                 ||
 
                                 category.includes(
-                                    searchText
+                                    text
                                 )
 
                                 ||
 
-                                type.includes(
-                                    searchText
+                                transactionType.includes(
+                                    text
                                 )
 
                                 ||
 
-                                date.includes(
-                                    searchText
+                                rawDate.includes(
+                                    text
                                 )
 
                                 ||
 
-                                amount.includes(
-                                    searchText
+                                displayDate.includes(
+                                    text
+                                )
+
+                                ||
+
+                                amountText.includes(
+                                    text
+                                )
+
+                                ||
+
+                                formattedAmount.includes(
+                                    text
                                 )
 
                             );
@@ -939,20 +889,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       DELETE TRANSACTION
-    ======================================== */
+    // ========================================
+    // DELETE TRANSACTION
+    // ========================================
 
     async function deleteTransaction(id) {
 
-        const confirmed =
-            confirm(
+        if (
+            !confirm(
                 "Delete this transaction?"
-            );
+            )
+        ) {
 
-
-        if (!confirmed) {
             return;
+
         }
 
 
@@ -1000,47 +950,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       UPDATE SUMMARY
-    ======================================== */
+    // ========================================
+    // SUMMARY
+    // ========================================
 
-    function updateSummary(
-        transactions
-    ) {
+    function updateSummary(items) {
 
-        let income =
-            0;
+        let income = 0;
 
-        let expense =
-            0;
+        let expense = 0;
 
 
-        transactions.forEach(
-            function (transaction) {
+        items.forEach(
+            transaction => {
 
-                const amount =
+                const value =
                     Number(
                         transaction.amount
                     ) || 0;
 
 
-                const type =
+                const transactionType =
                     String(
-                        transaction.type ||
-                        "expense"
+                        transaction.type
                     ).toLowerCase();
 
 
                 if (
-                    type ===
+                    transactionType ===
                     "income"
                 ) {
 
-                    income += amount;
+                    income += value;
 
                 } else {
 
-                    expense += amount;
+                    expense += value;
 
                 }
 
@@ -1052,52 +997,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             income - expense;
 
 
-        const incomeElement =
-            document.getElementById(
-                "income"
-            );
+        if (incomeEl) {
 
-
-        const expenseElement =
-            document.getElementById(
-                "expense"
-            );
-
-
-        const balanceElement =
-            document.getElementById(
-                "balance"
-            );
-
-
-        if (incomeElement) {
-
-            incomeElement.textContent =
+            incomeEl.textContent =
                 currency(income);
 
         }
 
 
-        if (expenseElement) {
+        if (expenseEl) {
 
-            expenseElement.textContent =
+            expenseEl.textContent =
                 currency(expense);
 
         }
 
 
-        if (balanceElement) {
+        if (balanceEl) {
 
-            balanceElement.textContent =
+            balanceEl.textContent =
                 currency(balance);
 
         }
-
-
-        const savingMessage =
-            document.getElementById(
-                "savingMessage"
-            );
 
 
         if (savingMessage) {
@@ -1107,12 +1028,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 savingMessage.textContent =
                     "You are saving money.";
 
-            } else if (balance < 0) {
+            }
+
+            else if (balance < 0) {
 
                 savingMessage.textContent =
                     "Your expenses are higher than your income.";
 
-            } else {
+            }
+
+            else {
 
                 savingMessage.textContent =
                     "Your balance is zero.";
@@ -1124,75 +1049,1014 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       STATEMENT ELEMENTS
-    ======================================== */
+    // ========================================
+    // EXPENSE CHART
+    // ========================================
+
+    let expenseChart = null;
+
+
+    function updateChart(items) {
+
+        const canvas =
+            document.getElementById(
+                "expenseChart"
+            );
+
+        const chartEmpty =
+            document.getElementById(
+                "chartEmpty"
+            );
+
+        const chartLegend =
+            document.getElementById(
+                "chartLegend"
+            );
+
+
+        if (!canvas) {
+            return;
+        }
+
+
+        if (
+            typeof Chart ===
+            "undefined"
+        ) {
+
+            console.error(
+                "Chart.js is not loaded."
+            );
+
+            return;
+
+        }
+
+
+        const categories = {};
+
+
+        items.forEach(
+            transaction => {
+
+                if (
+                    String(
+                        transaction.type || ""
+                    ).toLowerCase() !==
+                    "expense"
+                ) {
+
+                    return;
+
+                }
+
+
+                const name =
+                    String(
+                        transaction.category ||
+                        "Other"
+                    );
+
+
+                const value =
+                    Number(
+                        transaction.amount
+                    ) || 0;
+
+
+                if (value <= 0) {
+                    return;
+                }
+
+
+                categories[name] =
+                    (
+                        categories[name] ||
+                        0
+                    ) + value;
+
+            }
+        );
+
+
+        const labels =
+            Object.keys(
+                categories
+            );
+
+
+        const values =
+            Object.values(
+                categories
+            );
+
+
+        if (expenseChart) {
+
+            expenseChart.destroy();
+
+            expenseChart =
+                null;
+
+        }
+
+
+        if (chartLegend) {
+
+            chartLegend.innerHTML =
+                "";
+
+        }
+
+
+        if (!labels.length) {
+
+            canvas.style.display =
+                "none";
+
+
+            if (chartEmpty) {
+
+                chartEmpty.style.display =
+                    "flex";
+
+            }
+
+
+            return;
+
+        }
+
+
+        canvas.style.display =
+            "block";
+
+
+        if (chartEmpty) {
+
+            chartEmpty.style.display =
+                "none";
+
+        }
+
+
+        // ====================================
+        // CHART COLORS
+        // ====================================
+
+        const chartColors = [
+
+            "#4F46E5",
+
+            "#16A085",
+
+            "#F59E0B",
+
+            "#EF4444",
+
+            "#8B5CF6",
+
+            "#06B6D4",
+
+            "#EC4899",
+
+            "#84CC16",
+
+            "#F97316",
+
+            "#64748B"
+
+        ];
+
+
+        expenseChart =
+            new Chart(
+                canvas,
+                {
+
+                    type:
+                        "doughnut",
+
+
+                    data: {
+
+                        labels:
+                            labels,
+
+                        datasets: [
+
+                            {
+
+                                data:
+                                    values,
+
+                                backgroundColor:
+                                    labels.map(
+                                        (
+                                            _,
+                                            index
+                                        ) =>
+                                            chartColors[
+                                                index %
+                                                chartColors.length
+                                            ]
+                                    ),
+
+                                borderColor:
+                                    "#ffffff",
+
+                                borderWidth:
+                                    3,
+
+                                hoverOffset:
+                                    8
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive:
+                            true,
+
+                        maintainAspectRatio:
+                            false,
+
+                        cutout:
+                            "58%",
+
+
+                        plugins: {
+
+                            legend: {
+
+                                position:
+                                    "bottom"
+
+                            },
+
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label:
+                                        context => {
+
+                                            const value =
+                                                Number(
+                                                    context.raw
+                                                ) || 0;
+
+
+                                            const total =
+                                                values.reduce(
+                                                    (
+                                                        sum,
+                                                        item
+                                                    ) =>
+                                                        sum +
+                                                        Number(
+                                                            item
+                                                        ),
+                                                    0
+                                                );
+
+
+                                            const percentage =
+                                                total > 0
+                                                    ? (
+                                                        value /
+                                                        total
+                                                    ) *
+                                                    100
+                                                    : 0;
+
+
+                                            return (
+                                                `${context.label}: ₹` +
+                                                value.toLocaleString(
+                                                    "en-IN",
+                                                    {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 2
+                                                    }
+                                                ) +
+                                                ` (${percentage.toFixed(1)}%)`
+                                            );
+
+                                        }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+        // ====================================
+        // CUSTOM LEGEND
+        // ====================================
+
+        if (chartLegend) {
+
+            const total =
+                values.reduce(
+                    (
+                        sum,
+                        value
+                    ) =>
+                        sum +
+                        Number(value),
+                    0
+                );
+
+
+            labels.forEach(
+                (
+                    label,
+                    index
+                ) => {
+
+                    const value =
+                        Number(
+                            values[index]
+                        ) || 0;
+
+
+                    const percentage =
+                        total > 0
+                            ? (
+                                value /
+                                total
+                            ) *
+                            100
+                            : 0;
+
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.className =
+                        "chart-legend-item";
+
+
+                    const dot =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    dot.className =
+                        "chart-legend-dot";
+
+
+                    dot.style.backgroundColor =
+                        chartColors[
+                            index %
+                            chartColors.length
+                        ];
+
+
+                    const text =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    text.textContent =
+                        `${label} • ${currency(value)} (${percentage.toFixed(1)}%)`;
+
+
+                    item.appendChild(
+                        dot
+                    );
+
+                    item.appendChild(
+                        text
+                    );
+
+                    chartLegend.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ========================================
+    // EDIT MODAL ELEMENTS
+    // ========================================
+
+    const editModal =
+        document.getElementById(
+            "editModal"
+        );
+
+    const editForm =
+        document.getElementById(
+            "editTransactionForm"
+        );
+
+    const editTransactionId =
+        document.getElementById(
+            "editTransactionId"
+        );
+
+    const editDescription =
+        document.getElementById(
+            "editDescription"
+        );
+
+    const editAmount =
+        document.getElementById(
+            "editAmount"
+        );
+
+    const editCategory =
+        document.getElementById(
+            "editCategory"
+        );
+
+    const editType =
+        document.getElementById(
+            "editType"
+        );
+
+    const editDate =
+        document.getElementById(
+            "editDate"
+        );
+
+    const editMessage =
+        document.getElementById(
+            "editTransactionMessage"
+        );
+
+    const closeEditModalBtn =
+        document.getElementById(
+            "closeEditModal"
+        );
+
+    const cancelEditBtn =
+        document.getElementById(
+            "cancelEditBtn"
+        );
+
+    const saveEditBtn =
+        document.getElementById(
+            "saveEditBtn"
+        );
+
+
+    // ========================================
+    // OPEN EDIT MODAL
+    // ========================================
+
+    function openEditModal(id) {
+
+        const transaction =
+            allTransactions.find(
+                item =>
+                    String(item.id) ===
+                    String(id)
+            );
+
+
+        if (!transaction) {
+
+            console.error(
+                "Transaction not found:",
+                id
+            );
+
+            return;
+
+        }
+
+
+        if (editTransactionId) {
+
+            editTransactionId.value =
+                transaction.id;
+
+        }
+
+
+        if (editDescription) {
+
+            editDescription.value =
+                transaction.description ||
+                "";
+
+        }
+
+
+        if (editAmount) {
+
+            editAmount.value =
+                transaction.amount ||
+                "";
+
+        }
+
+
+        if (editCategory) {
+
+            editCategory.value =
+                transaction.category ||
+                "";
+
+        }
+
+
+        if (editType) {
+
+            editType.value =
+                String(
+                    transaction.type ||
+                    "expense"
+                ).toLowerCase();
+
+        }
+
+
+        if (editDate) {
+
+            editDate.value =
+                transaction.date ||
+                "";
+
+        }
+
+
+        if (editMessage) {
+
+            editMessage.textContent =
+                "";
+
+            editMessage.className =
+                "message";
+
+        }
+
+
+        if (editModal) {
+
+            editModal.classList.remove(
+                "hidden"
+            );
+
+            editModal.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    // ========================================
+    // CLOSE EDIT MODAL
+    // ========================================
+
+    function closeEditModal() {
+
+        if (editModal) {
+
+            editModal.classList.remove(
+                "show"
+            );
+
+            editModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (editForm) {
+
+            editForm.reset();
+
+        }
+
+
+        if (editTransactionId) {
+
+            editTransactionId.value =
+                "";
+
+        }
+
+
+        if (editMessage) {
+
+            editMessage.textContent =
+                "";
+
+            editMessage.className =
+                "message";
+
+        }
+
+    }
+
+
+    // ========================================
+    // CLOSE BUTTONS
+    // ========================================
+
+    if (closeEditModalBtn) {
+
+        closeEditModalBtn.addEventListener(
+            "click",
+            closeEditModal
+        );
+
+    }
+
+
+    if (cancelEditBtn) {
+
+        cancelEditBtn.addEventListener(
+            "click",
+            closeEditModal
+        );
+
+    }
+
+
+    // ========================================
+    // CLICK OUTSIDE MODAL
+    // ========================================
+
+    if (editModal) {
+
+        editModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    editModal
+                ) {
+
+                    closeEditModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ========================================
+    // ESC KEY
+    // ========================================
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                if (
+                    editModal &&
+                    !editModal.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    closeEditModal();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // ========================================
+    // SAVE EDITED TRANSACTION
+    // ========================================
+
+    if (editForm) {
+
+        editForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const id =
+                    editTransactionId
+                        ? editTransactionId.value
+                        : "";
+
+
+                const descriptionValue =
+                    editDescription
+                        ? editDescription.value.trim()
+                        : "";
+
+
+                const amountValue =
+                    editAmount
+                        ? Number(
+                            editAmount.value
+                        )
+                        : 0;
+
+
+                const categoryValue =
+                    editCategory
+                        ? editCategory.value
+                        : "";
+
+
+                const typeValue =
+                    editType
+                        ? editType.value
+                        : "expense";
+
+
+                const dateValue =
+                    editDate
+                        ? editDate.value
+                        : "";
+
+
+                if (!id) {
+
+                    showEditMessage(
+                        "Transaction ID not found.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!descriptionValue) {
+
+                    showEditMessage(
+                        "Please enter a description.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !amountValue ||
+                    amountValue <= 0
+                ) {
+
+                    showEditMessage(
+                        "Please enter a valid amount.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!categoryValue) {
+
+                    showEditMessage(
+                        "Please select a category.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!dateValue) {
+
+                    showEditMessage(
+                        "Please select a date.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (saveEditBtn) {
+
+                    saveEditBtn.disabled =
+                        true;
+
+                    saveEditBtn.textContent =
+                        "Saving...";
+
+                }
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await supabase
+                            .from("transactions")
+                            .update({
+
+                                description:
+                                    descriptionValue,
+
+                                amount:
+                                    amountValue,
+
+                                category:
+                                    categoryValue,
+
+                                type:
+                                    typeValue,
+
+                                date:
+                                    dateValue
+
+                            })
+                            .eq(
+                                "id",
+                                id
+                            )
+                            .eq(
+                                "user_id",
+                                user.id
+                            );
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    showEditMessage(
+                        "Transaction updated successfully.",
+                        "success"
+                    );
+
+
+                    await loadTransactions();
+
+
+                    setTimeout(
+                        () => {
+
+                            closeEditModal();
+
+                        },
+                        500
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Update transaction error:",
+                        error
+                    );
+
+
+                    showEditMessage(
+                        error.message ||
+                        "Could not update transaction.",
+                        "error"
+                    );
+
+                } finally {
+
+                    if (saveEditBtn) {
+
+                        saveEditBtn.disabled =
+                            false;
+
+                        saveEditBtn.textContent =
+                            "Save Changes";
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ========================================
+    // EDIT MESSAGE
+    // ========================================
+
+    function showEditMessage(
+        text,
+        messageType
+    ) {
+
+        if (!editMessage) {
+            return;
+        }
+
+
+        editMessage.textContent =
+            text;
+
+        editMessage.className =
+            `message ${messageType}`;
+
+    }
+
+
+    // ========================================
+    // STATEMENT ELEMENTS
+    // ========================================
 
     const statementType =
         document.getElementById(
             "statementType"
         );
 
-
     const statementMonth =
         document.getElementById(
             "statementMonth"
         );
-
 
     const statementMonthGroup =
         document.getElementById(
             "statementMonthGroup"
         );
 
-
     const generateStatementBtn =
         document.getElementById(
             "generateStatementBtn"
         );
-
 
     const downloadStatementBtn =
         document.getElementById(
             "downloadStatementBtn"
         );
 
-
     const statementMessage =
         document.getElementById(
             "statementMessage"
         );
-
 
     const statementResult =
         document.getElementById(
             "statementResult"
         );
 
-
     const statementTitle =
         document.getElementById(
             "statementTitle"
         );
-
 
     const statementIncome =
         document.getElementById(
             "statementIncome"
         );
 
-
     const statementExpense =
         document.getElementById(
             "statementExpense"
         );
 
-
     const statementBalance =
         document.getElementById(
             "statementBalance"
         );
-
 
     const statementBody =
         document.getElementById(
@@ -1203,14 +2067,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     let currentStatementTransactions =
         [];
 
-
     let currentStatementTitle =
         "";
 
 
-    /* ========================================
-       DEFAULT MONTH
-    ======================================== */
+    // ========================================
+    // DEFAULT MONTH
+    // ========================================
 
     if (statementMonth) {
 
@@ -1220,15 +2083,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       STATEMENT TYPE
-    ======================================== */
+    // ========================================
+    // STATEMENT TYPE CHANGE
+    // ========================================
 
     if (statementType) {
 
         statementType.addEventListener(
             "change",
-            function () {
+            () => {
 
                 if (
                     statementType.value ===
@@ -1277,6 +2140,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     statementMessage.textContent =
                         "";
 
+                    statementMessage.className =
+                        "message";
+
                 }
 
             }
@@ -1285,9 +2151,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       GENERATE STATEMENT
-    ======================================== */
+    // ========================================
+    // GENERATE STATEMENT
+    // ========================================
 
     if (generateStatementBtn) {
 
@@ -1300,11 +2166,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     async function generateStatement() {
-
-        if (!statementType) {
-            return;
-        }
-
 
         if (statementMessage) {
 
@@ -1335,12 +2196,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        generateStatementBtn.disabled =
-            true;
+        if (generateStatementBtn) {
 
+            generateStatementBtn.disabled =
+                true;
 
-        generateStatementBtn.textContent =
-            "Generating...";
+            generateStatementBtn.textContent =
+                "Generating...";
+
+        }
 
 
         try {
@@ -1352,11 +2216,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             let title;
 
 
-            /* =================================
-               MONTHLY
-            ================================= */
+            // ====================================
+            // MONTHLY
+            // ====================================
 
             if (
+                statementType &&
                 statementType.value ===
                 "monthly"
             ) {
@@ -1373,26 +2238,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
 
-                const parts =
+                const [
+                    year,
+                    month
+                ] =
                     statementMonth.value
-                        .split("-");
-
-
-                const year =
-                    Number(parts[0]);
-
-
-                const month =
-                    Number(parts[1]);
+                        .split("-")
+                        .map(Number);
 
 
                 startDate =
-                    `${year}-${String(
-                        month
-                    ).padStart(
-                        2,
-                        "0"
-                    )}-01`;
+                    `${year}-${String(month).padStart(2, "0")}-01`;
 
 
                 const lastDay =
@@ -1404,17 +2260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
                 endDate =
-                    `${year}-${String(
-                        month
-                    ).padStart(
-                        2,
-                        "0"
-                    )}-${String(
-                        lastDay
-                    ).padStart(
-                        2,
-                        "0"
-                    )}`;
+                    `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
 
                 const monthName =
@@ -1435,10 +2281,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
-
-            /* =================================
-               WEEKLY
-            ================================= */
+            // ====================================
+            // WEEKLY
+            // ====================================
 
             else {
 
@@ -1449,24 +2294,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 startDate =
                     range.start;
 
-
                 endDate =
                     range.end;
 
 
                 title =
-                    `Weekly Statement (${formatDate(
-                        startDate
-                    )} to ${formatDate(
-                        endDate
-                    )})`;
+                    `Weekly Statement (${formatDate(startDate)} to ${formatDate(endDate)})`;
 
             }
 
 
-            /* =================================
-               LOAD STATEMENT
-            ================================= */
+            // ====================================
+            // GET DATA
+            // ====================================
 
             const {
                 data,
@@ -1513,49 +2353,40 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentStatementTransactions =
                 transactions;
 
-
             currentStatementTitle =
                 title;
 
 
-            /* =================================
-               CALCULATE TOTALS
-            ================================= */
+            // ====================================
+            // TOTALS
+            // ====================================
 
-            let income =
-                0;
+            let income = 0;
 
-
-            let expense =
-                0;
+            let expense = 0;
 
 
             transactions.forEach(
-                function (transaction) {
+                transaction => {
 
-                    const amount =
+                    const value =
                         Number(
                             transaction.amount
                         ) || 0;
 
 
-                    const type =
-                        String(
-                            transaction.type ||
-                            "expense"
-                        ).toLowerCase();
-
-
                     if (
-                        type ===
+                        String(
+                            transaction.type
+                        ).toLowerCase() ===
                         "income"
                     ) {
 
-                        income += amount;
+                        income += value;
 
                     } else {
 
-                        expense += amount;
+                        expense += value;
 
                     }
 
@@ -1567,9 +2398,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 income - expense;
 
 
-            /* =================================
-               SHOW SUMMARY
-            ================================= */
+            // ====================================
+            // DISPLAY
+            // ====================================
 
             if (statementTitle) {
 
@@ -1603,10 +2434,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
 
-            /* =================================
-               STATEMENT TABLE
-            ================================= */
-
             if (statementBody) {
 
                 statementBody.innerHTML =
@@ -1639,43 +2466,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else {
 
                 transactions.forEach(
-                    function (transaction) {
+                    transaction => {
 
-                        const row =
+                        const tr =
                             document.createElement(
                                 "tr"
                             );
 
 
-                        const type =
-                            String(
-                                transaction.type ||
-                                "expense"
-                            ).toLowerCase();
-
-
                         const isIncome =
-                            type ===
+                            String(
+                                transaction.type
+                            ).toLowerCase() ===
                             "income";
 
 
-                        const amount =
-                            Number(
-                                transaction.amount
-                            ) || 0;
-
-
-                        const formattedAmount =
-                            amount.toLocaleString(
-                                "en-IN",
-                                {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }
-                            );
-
-
-                        row.innerHTML = `
+                        tr.innerHTML = `
 
                             <td>
                                 ${formatDate(
@@ -1683,19 +2489,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 )}
                             </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    transaction.description ||
-                                    ""
-                                )}
-                            </td>
 
                             <td>
                                 ${escapeHtml(
-                                    transaction.category ||
-                                    ""
+                                    transaction.description
                                 )}
                             </td>
+
+
+                            <td>
+                                ${escapeHtml(
+                                    transaction.category
+                                )}
+                            </td>
+
 
                             <td>
 
@@ -1717,6 +2524,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                             </td>
 
+
                             <td
                                 class="${
                                     isIncome
@@ -1729,20 +2537,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     isIncome
                                         ? "+"
                                         : "-"
-                                }₹${formattedAmount}
+                                }${currency(
+                                    transaction.amount
+                                )}
 
                             </td>
 
                         `;
 
 
-                        if (statementBody) {
-
-                            statementBody.appendChild(
-                                row
-                            );
-
-                        }
+                        statementBody.appendChild(
+                            tr
+                        );
 
                     }
                 );
@@ -1760,7 +2566,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
             if (
-                transactions.length > 0 &&
+                transactions.length &&
                 downloadStatementBtn
             ) {
 
@@ -1769,7 +2575,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
 
             }
-
 
         } catch (error) {
 
@@ -1792,21 +2597,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         } finally {
 
-            generateStatementBtn.disabled =
-                false;
+            if (generateStatementBtn) {
 
+                generateStatementBtn.disabled =
+                    false;
 
-            generateStatementBtn.textContent =
-                "Generate Statement";
+                generateStatementBtn.textContent =
+                    "Generate Statement";
+
+            }
 
         }
 
     }
-
-
-    /* ========================================
-       DOWNLOAD STATEMENT
-    ======================================== */
+    // ========================================
+    // DOWNLOAD STATEMENT
+    // ========================================
 
     if (downloadStatementBtn) {
 
@@ -1829,6 +2635,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
             return;
+
         }
 
 
@@ -1837,7 +2644,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         currentStatementTransactions.forEach(
-            function (transaction) {
+            transaction => {
 
                 const description =
                     String(
@@ -1861,31 +2668,28 @@ document.addEventListener("DOMContentLoaded", async () => {
                     );
 
 
-                const type =
+                const transactionType =
                     String(
                         transaction.type ||
-                        "expense"
-                    ).toLowerCase();
-
-
-                const typeName =
-                    type === "income"
+                        ""
+                    ).toLowerCase() ===
+                    "income"
                         ? "Income"
                         : "Expense";
 
 
-                const amount =
+                const amountValue =
                     Number(
                         transaction.amount
-                    ).toFixed(2);
+                    ) || 0;
 
 
                 csv +=
                     `"${transaction.date}",` +
                     `"${description}",` +
                     `"${category}",` +
-                    `"${typeName}",` +
-                    `"${amount}"\n`;
+                    `"${transactionType}",` +
+                    `"${amountValue.toFixed(2)}"\n`;
 
             }
         );
@@ -1918,7 +2722,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         link.download =
-            currentStatementTitle
+            (
+                currentStatementTitle ||
+                "Statement"
+            )
                 .replaceAll(
                     " ",
                     "_"
@@ -1930,8 +2737,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 .replaceAll(
                     ")",
                     ""
-                )
-                + ".csv";
+                ) +
+            ".csv";
 
 
         document.body.appendChild(
@@ -1954,18 +2761,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       CURRENT WEEK
-    ======================================== */
+    // ========================================
+    // CURRENT WEEK
+    // ========================================
 
     function getCurrentWeekRange() {
 
-        const now =
+        const current =
             new Date();
 
 
         const day =
-            now.getDay();
+            current.getDay();
 
 
         const mondayOffset =
@@ -1975,22 +2782,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         const monday =
-            new Date(now);
+            new Date(
+                current
+            );
 
 
         monday.setDate(
-            now.getDate() +
+            current.getDate() +
             mondayOffset
         );
 
 
+        monday.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
         const sunday =
-            new Date(monday);
+            new Date(
+                monday
+            );
 
 
         sunday.setDate(
             monday.getDate() +
             6
+        );
+
+
+        sunday.setHours(
+            0,
+            0,
+            0,
+            0
         );
 
 
@@ -2011,30 +2838,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       DATE FUNCTIONS
-    ======================================== */
-
-    function getToday() {
-
-        return toDateString(
-            new Date()
-        );
-
-    }
-
+    // ========================================
+    // DATE HELPERS
+    // ========================================
 
     function toDateString(
-        date
+        dateObject
     ) {
 
         const year =
-            date.getFullYear();
+            dateObject.getFullYear();
 
 
         const month =
             String(
-                date.getMonth() + 1
+                dateObject.getMonth() + 1
             ).padStart(
                 2,
                 "0"
@@ -2043,7 +2861,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const day =
             String(
-                date.getDate()
+                dateObject.getDate()
             ).padStart(
                 2,
                 "0"
@@ -2051,11 +2869,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         return (
-            year +
-            "-" +
-            month +
-            "-" +
-            day
+            `${year}-${month}-${day}`
+        );
+
+    }
+
+
+    function today() {
+
+        return toDateString(
+            new Date()
         );
 
     }
@@ -2063,19 +2886,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function currentMonth() {
 
-        const date =
+        const d =
             new Date();
 
 
         return (
-            date.getFullYear() +
-            "-" +
-            String(
-                date.getMonth() + 1
-            ).padStart(
-                2,
-                "0"
-            )
+            `${d.getFullYear()}-${String(
+                d.getMonth() + 1
+            ).padStart(2, "0")}`
         );
 
     }
@@ -2091,20 +2909,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         const parts =
-            String(value)
-                .split("-");
+            String(value).split("-");
 
 
         if (
-            parts.length === 3
+            parts.length ===
+            3
         ) {
 
             return (
-                parts[2] +
-                "-" +
-                parts[1] +
-                "-" +
-                parts[0]
+                `${parts[2]}-${parts[1]}-${parts[0]}`
             );
 
         }
@@ -2115,9 +2929,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       CURRENCY
-    ======================================== */
+    // ========================================
+    // CURRENCY
+    // ========================================
 
     function currency(
         value
@@ -2126,12 +2940,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return (
             "₹" +
             Number(
-                value
+                value || 0
             ).toLocaleString(
                 "en-IN",
                 {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
+                    minimumFractionDigits:
+                        2,
+
+                    maximumFractionDigits:
+                        2
                 }
             )
         );
@@ -2139,53 +2956,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       HTML SECURITY
-    ======================================== */
+    // ========================================
+    // HTML ESCAPE
+    // ========================================
 
     function escapeHtml(
         value
     ) {
 
         return String(
-            value
+            value ?? ""
         )
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
 
     }
 
 
-    /* ========================================
-       MESSAGE
-    ======================================== */
+    // ========================================
+    // TRANSACTION MESSAGE
+    // ========================================
 
     function showTransactionMessage(
         text,
-        type
+        messageType
     ) {
 
         if (!transactionMessage) {
@@ -2198,7 +3010,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         transactionMessage.className =
-            "message " + type;
+            `message ${messageType}`;
 
     }
 
@@ -2220,17 +3032,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       REFRESH
-    ======================================== */
+    // ========================================
+    // REFRESH
+    // ========================================
 
     if (refreshBtn) {
 
         refreshBtn.addEventListener(
             "click",
-            async function () {
+            async () => {
 
-                await loadTransactions();
+                refreshBtn.disabled =
+                    true;
+
+
+                const originalText =
+                    refreshBtn.textContent;
+
+
+                refreshBtn.textContent =
+                    "Refreshing...";
+
+
+                try {
+
+                    await loadTransactions();
+
+                } finally {
+
+                    refreshBtn.disabled =
+                        false;
+
+                    refreshBtn.textContent =
+                        originalText;
+
+                }
 
             }
         );
@@ -2238,27 +3074,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    /* ========================================
-       INITIAL LOAD
-    ======================================== */
+    // ========================================
+    // INITIAL LOAD
+    // ========================================
 
     await loadTransactions();
 
 
-    /* ========================================
-       AUTH STATE
-    ======================================== */
+    // ========================================
+    // AUTH STATE
+    // ========================================
 
     supabase.auth.onAuthStateChange(
-        function (
+        (
             event,
             currentSession
-        ) {
+        ) => {
 
             if (
                 event ===
                 "SIGNED_OUT"
             ) {
+
+                window.location.replace(
+                    "auth.html"
+                );
+
+                return;
+
+            }
+
+
+            if (!currentSession) {
 
                 window.location.replace(
                     "auth.html"

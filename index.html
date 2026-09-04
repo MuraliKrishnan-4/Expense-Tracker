@@ -2,17 +2,31 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Expense Tracker</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- HEADER -->
+
+    <!-- ========================================
+         HEADER
+         ======================================== -->
+
     <header class="main-header">
 
         <div class="brand">
@@ -22,14 +36,22 @@
             </div>
 
             <div class="brand-text">
-                <h1>Expense Tracker</h1>
-                <p>Track your income, expenses and savings</p>
+
+                <h1>
+                    Expense Tracker
+                </h1>
+
+                <p>
+                    Track your income, expenses and savings
+                </p>
+
             </div>
 
         </div>
 
 
         <!-- PROFILE -->
+
         <div class="profile-area">
 
             <button
@@ -69,7 +91,9 @@
 
                 <div class="profile-row">
 
-                    <span>Name</span>
+                    <span>
+                        Name
+                    </span>
 
                     <b id="profileDetailName">
                         -
@@ -80,7 +104,9 @@
 
                 <div class="profile-row">
 
-                    <span>Email</span>
+                    <span>
+                        Email
+                    </span>
 
                     <b id="profileDetailEmail">
                         -
@@ -105,11 +131,17 @@
 
 
 
-    <!-- MAIN -->
+    <!-- ========================================
+         MAIN
+         ======================================== -->
+
     <main class="container">
 
 
-        <!-- SUMMARY -->
+        <!-- ========================================
+             SUMMARY
+             ======================================== -->
+
         <section class="summary-grid">
 
 
@@ -138,6 +170,7 @@
             </div>
 
 
+
             <div class="summary-card income-card">
 
                 <div class="summary-icon">
@@ -160,6 +193,7 @@
                 </div>
 
             </div>
+
 
 
             <div class="summary-card expense-card">
@@ -185,11 +219,15 @@
 
             </div>
 
+
         </section>
 
 
 
-        <!-- SAVING MESSAGE -->
+        <!-- ========================================
+             SAVING MESSAGE
+             ======================================== -->
+
         <div
             id="savingMessage"
             class="saving-message"
@@ -197,7 +235,10 @@
 
 
 
-        <!-- ADD TRANSACTION -->
+        <!-- ========================================
+             ADD TRANSACTION
+             ======================================== -->
+
         <section class="card">
 
             <div class="section-heading">
@@ -222,10 +263,12 @@
                 autocomplete="off"
             >
 
+
                 <div class="form-grid">
 
 
                     <!-- DESCRIPTION -->
+
                     <div class="form-group">
 
                         <label for="description">
@@ -243,7 +286,9 @@
                     </div>
 
 
+
                     <!-- AMOUNT -->
+
                     <div class="form-group">
 
                         <label for="amount">
@@ -262,7 +307,9 @@
                     </div>
 
 
+
                     <!-- CATEGORY -->
+
                     <div class="form-group">
 
                         <label for="category">
@@ -323,7 +370,9 @@
                     </div>
 
 
+
                     <!-- TYPE -->
+
                     <div class="form-group">
 
                         <label for="type">
@@ -348,7 +397,9 @@
                     </div>
 
 
+
                     <!-- DATE -->
+
                     <div class="form-group">
 
                         <label for="date">
@@ -363,7 +414,9 @@
 
                     </div>
 
+
                 </div>
+
 
 
                 <button
@@ -380,15 +433,70 @@
                     class="message"
                 ></div>
 
+
             </form>
 
         </section>
 
 
 
-        <!-- RECENT TRANSACTIONS -->
-        <section class="card">
+        <!-- ========================================
+             EXPENSE CHART
+             ======================================== -->
 
+        <section class="card chart-card">
+
+            <div class="chart-header">
+
+                <div>
+
+                    <h2>
+                        Expense Overview
+                    </h2>
+
+                    <p class="section-subtitle">
+                        See where your money is going by category
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-layout">
+
+                <div class="chart-container">
+
+                    <canvas
+                        id="expenseChart"
+                    ></canvas>
+
+                    <div
+                        id="chartEmpty"
+                        class="chart-empty"
+                    >
+                        Add expenses to see your chart.
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="chartLegend"
+                    class="chart-legend"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ========================================
+             RECENT TRANSACTIONS
+             ======================================== -->
+
+        <section class="card">
 
             <div class="transactions-header">
 
@@ -408,10 +516,10 @@
 
 
                 <!-- REFRESH + SEARCH -->
+
                 <div class="transaction-controls">
 
 
-                    <!-- REFRESH FIRST -->
                     <button
                         id="refreshBtn"
                         class="refresh-btn"
@@ -421,7 +529,7 @@
                     </button>
 
 
-                    <!-- SEARCH SECOND -->
+
                     <div class="search-box">
 
                         <span>
@@ -437,13 +545,16 @@
 
                     </div>
 
+
                 </div>
+
 
             </div>
 
 
 
             <!-- LOADING -->
+
             <div
                 id="loadingTransactions"
                 class="loading"
@@ -454,6 +565,7 @@
 
 
             <!-- TABLE -->
+
             <div class="table-wrap">
 
                 <table>
@@ -492,7 +604,6 @@
 
 
                     <tbody id="transactionsBody">
-
                     </tbody>
 
                 </table>
@@ -503,7 +614,245 @@
 
 
 
-        <!-- STATEMENT -->
+        <!-- ========================================
+             EDIT TRANSACTION MODAL
+             ======================================== -->
+
+        <div
+            id="editModal"
+            class="edit-modal hidden"
+        >
+
+            <div
+                class="edit-modal-overlay"
+            ></div>
+
+
+            <div
+                class="edit-modal-content"
+            >
+
+
+                <div class="edit-modal-header">
+
+                    <div>
+
+                        <h2>
+                            Edit Transaction
+                        </h2>
+
+                        <p>
+                            Update your transaction details
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="closeEditModal"
+                        class="edit-close-btn"
+                        type="button"
+                        aria-label="Close"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <form
+                    id="editTransactionForm"
+                    autocomplete="off"
+                >
+
+
+                    <input
+                        id="editTransactionId"
+                        type="hidden"
+                    >
+
+
+
+                    <div class="form-group">
+
+                        <label for="editDescription">
+                            Description
+                        </label>
+
+                        <input
+                            id="editDescription"
+                            type="text"
+                            maxlength="100"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="editAmount">
+                            Amount
+                        </label>
+
+                        <input
+                            id="editAmount"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="editCategory">
+                            Category
+                        </label>
+
+                        <select
+                            id="editCategory"
+                            required
+                        >
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option value="Food">
+                                Food
+                            </option>
+
+                            <option value="Transport">
+                                Transport
+                            </option>
+
+                            <option value="Shopping">
+                                Shopping
+                            </option>
+
+                            <option value="Bills">
+                                Bills
+                            </option>
+
+                            <option value="Entertainment">
+                                Entertainment
+                            </option>
+
+                            <option value="Health">
+                                Health
+                            </option>
+
+                            <option value="Education">
+                                Education
+                            </option>
+
+                            <option value="Salary">
+                                Salary
+                            </option>
+
+                            <option value="Business">
+                                Business
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="editType">
+                            Type
+                        </label>
+
+                        <select
+                            id="editType"
+                            required
+                        >
+
+                            <option value="expense">
+                                Expense
+                            </option>
+
+                            <option value="income">
+                                Income
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="editDate">
+                            Date
+                        </label>
+
+                        <input
+                            id="editDate"
+                            type="date"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div
+                        id="editTransactionMessage"
+                        class="message"
+                    ></div>
+
+
+
+                    <div class="edit-modal-actions">
+
+                        <button
+                            id="cancelEditBtn"
+                            class="cancel-edit-btn"
+                            type="button"
+                        >
+                            Cancel
+                        </button>
+
+
+                        <button
+                            id="saveEditBtn"
+                            class="save-edit-btn"
+                            type="submit"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ========================================
+             STATEMENT
+             ======================================== -->
+
         <section class="card statement-card">
 
 
@@ -526,6 +875,7 @@
 
 
             <!-- STATEMENT CONTROLS -->
+
             <div class="statement-controls">
 
 
@@ -550,6 +900,7 @@
                 </div>
 
 
+
                 <div
                     id="statementMonthGroup"
                     class="form-group"
@@ -567,6 +918,7 @@
                 </div>
 
 
+
                 <button
                     id="generateStatementBtn"
                     class="add-btn statement-btn"
@@ -575,11 +927,13 @@
                     Generate Statement
                 </button>
 
+
             </div>
 
 
 
             <!-- DOWNLOAD -->
+
             <button
                 id="downloadStatementBtn"
                 class="download-btn hidden"
@@ -598,14 +952,17 @@
 
 
             <!-- RESULT -->
+
             <div
                 id="statementResult"
                 class="statement-result hidden"
             >
 
+
                 <h3 id="statementTitle">
                     Statement
                 </h3>
+
 
 
                 <div class="statement-summary">
@@ -627,6 +984,7 @@
                     </div>
 
 
+
                     <div class="statement-summary-item">
 
                         <span>
@@ -643,6 +1001,7 @@
                     </div>
 
 
+
                     <div class="statement-summary-item">
 
                         <span>
@@ -654,6 +1013,7 @@
                         </strong>
 
                     </div>
+
 
                 </div>
 
@@ -673,15 +1033,25 @@
 
                             <tr>
 
-                                <th>Date</th>
+                                <th>
+                                    Date
+                                </th>
 
-                                <th>Description</th>
+                                <th>
+                                    Description
+                                </th>
 
-                                <th>Category</th>
+                                <th>
+                                    Category
+                                </th>
 
-                                <th>Type</th>
+                                <th>
+                                    Type
+                                </th>
 
-                                <th>Amount</th>
+                                <th>
+                                    Amount
+                                </th>
 
                             </tr>
 
@@ -689,14 +1059,15 @@
 
 
                         <tbody id="statementBody">
-
                         </tbody>
 
                     </table>
 
                 </div>
 
+
             </div>
+
 
         </section>
 
@@ -705,10 +1076,22 @@
 
 
 
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ========================================
+         LIBRARIES
+         ======================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
 
     <script src="supabase.js"></script>
+
 
     <script src="script.js"></script>
 
