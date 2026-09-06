@@ -1623,3 +1623,38 @@ tbody tr:hover {
     }
 
 }
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-legend-color {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.chart-legend-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #0f2d55;
+    font-size: 15px;
+}
+
+.chart-legend-text strong {
+    font-weight: 500;
+}
+
+.chart-legend-text span {
+    font-size: 14px;
+}

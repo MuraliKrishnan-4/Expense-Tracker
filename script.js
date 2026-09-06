@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // ========================================
+    // =========================================================
     // SUPABASE
-    // ========================================
+    // =========================================================
 
     const supabase = window.supabaseClient;
 
@@ -11,10 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-
-    // ========================================
-    // CHECK LOGIN
-    // ========================================
+    // =========================================================
+    // SESSION
+    // =========================================================
 
     const {
         data: { session },
@@ -28,10 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const user = session.user;
 
-
-    // ========================================
-    // USER PROFILE
-    // ========================================
+    // =========================================================
+    // PROFILE
+    // =========================================================
 
     const profileBtn =
         document.getElementById("profileBtn");
@@ -60,16 +58,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         user.email?.split("@")[0] ||
         "User";
 
-    const userEmail =
-        user.email || "";
-
-
     if (profileName) {
         profileName.textContent = userName;
     }
 
     if (profileEmail) {
-        profileEmail.textContent = userEmail;
+        profileEmail.textContent = user.email || "";
     }
 
     if (profileDetailName) {
@@ -77,13 +71,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (profileDetailEmail) {
-        profileDetailEmail.textContent = userEmail;
+        profileDetailEmail.textContent =
+            user.email || "";
     }
 
-
-    // ========================================
+    // =========================================================
     // PROFILE MENU
-    // ========================================
+    // =========================================================
 
     if (profileBtn && profileMenu) {
 
@@ -93,22 +87,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 event.stopPropagation();
 
-                profileMenu.classList.toggle("show");
+                profileMenu.classList.toggle(
+                    "show"
+                );
 
             }
         );
-
 
         document.addEventListener(
             "click",
             event => {
 
                 if (
-                    !profileMenu.contains(event.target) &&
-                    !profileBtn.contains(event.target)
+                    !profileMenu.contains(
+                        event.target
+                    ) &&
+                    !profileBtn.contains(
+                        event.target
+                    )
                 ) {
 
-                    profileMenu.classList.remove("show");
+                    profileMenu.classList.remove(
+                        "show"
+                    );
 
                 }
 
@@ -117,10 +118,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
+    // =========================================================
     // LOGOUT
-    // ========================================
+    // =========================================================
 
     if (logoutBtn) {
 
@@ -133,10 +133,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 logoutBtn.textContent =
                     "Logging out...";
 
-
                 const { error } =
                     await supabase.auth.signOut();
-
 
                 if (error) {
 
@@ -146,7 +144,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "Logout failed. Please try again."
                     );
 
-                    logoutBtn.disabled = false;
+                    logoutBtn.disabled =
+                        false;
 
                     logoutBtn.textContent =
                         "Logout";
@@ -154,7 +153,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
 
                 }
-
 
                 window.location.replace(
                     "auth.html"
@@ -165,12 +163,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    // =========================================================
+    // FORM ELEMENTS
+    // =========================================================
 
-    // ========================================
-    // TRANSACTION ELEMENTS
-    // ========================================
-
-    const form =
+    const transactionForm =
         document.getElementById(
             "transactionForm"
         );
@@ -200,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "date"
         );
 
-    const addBtn =
+    const addTransactionBtn =
         document.getElementById(
             "addTransactionBtn"
         );
@@ -210,12 +207,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             "transactionMessage"
         );
 
+    // =========================================================
+    // TRANSACTION TABLE
+    // =========================================================
+
     const transactionsBody =
         document.getElementById(
             "transactionsBody"
         );
 
-    const loading =
+    const loadingTransactions =
         document.getElementById(
             "loadingTransactions"
         );
@@ -225,36 +226,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             "refreshBtn"
         );
 
-
-    // ========================================
-    // IMPORTANT
-    // SEARCH
-    // ========================================
-
-    // HTML uses:
-    // id="transactionSearch"
-
-    const searchInput =
+    const transactionSearch =
         document.getElementById(
             "transactionSearch"
         );
 
+    // =========================================================
+    // SUMMARY
+    // =========================================================
 
-    // ========================================
-    // SUMMARY ELEMENTS
-    // ========================================
-
-    const balanceEl =
+    const balance =
         document.getElementById(
             "balance"
         );
 
-    const incomeEl =
+    const income =
         document.getElementById(
             "income"
         );
 
-    const expenseEl =
+    const expense =
         document.getElementById(
             "expense"
         );
@@ -264,37 +255,376 @@ document.addEventListener("DOMContentLoaded", async () => {
             "savingMessage"
         );
 
-
-    // ========================================
-    // TRANSACTION DATA
-    // ========================================
+    // =========================================================
+    // DATA
+    // =========================================================
 
     let allTransactions = [];
 
+    let selectedMonth =
+        getCurrentMonth();
 
-    // ========================================
-    // DEFAULT DATE
-    // ========================================
+    let expenseChart = null;
 
-    if (date) {
-        date.value = today();
+    // =========================================================
+    // CREATE SELECTED MONTH CONTROL
+    // =========================================================
+
+    let monthSelector =
+        document.getElementById(
+            "dashboardMonthSelector"
+        );
+
+    function createMonthSelector() {
+
+        if (monthSelector) {
+            return;
+        }
+
+        const summaryGrid =
+            document.querySelector(
+                ".summary-grid"
+            );
+
+        if (!summaryGrid) {
+            return;
+        }
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+        wrapper.id =
+            "dashboardMonthSelectorWrapper";
+
+        wrapper.innerHTML = `
+
+            <div
+                class="dashboard-month-control"
+            >
+
+                <label
+                    for="dashboardMonthSelector"
+                >
+                    Selected Month
+                </label>
+
+                <select
+                    id="dashboardMonthSelector"
+                ></select>
+
+            </div>
+
+        `;
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+        style.id =
+            "dashboardMonthStyles";
+
+        style.textContent = `
+
+            #dashboardMonthSelectorWrapper {
+                width: 100%;
+                margin-bottom: 16px;
+            }
+
+            .dashboard-month-control {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+
+            .dashboard-month-control label {
+                color: #17375e;
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            #dashboardMonthSelector {
+                min-width: 190px;
+                height: 42px;
+                padding: 0 12px;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+                background: #ffffff;
+                color: #17375e;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+            #dashboardMonthSelector:focus {
+                outline: none;
+                border-color: #2f4b73;
+            }
+
+            .selected-month-title {
+                margin-top: 4px;
+                margin-bottom: 16px;
+                color: #64748b;
+                font-size: 14px;
+            }
+
+            @media (max-width: 700px) {
+
+                .dashboard-month-control {
+                    justify-content: stretch;
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                #dashboardMonthSelector {
+                    width: 100%;
+                }
+
+            }
+
+        `;
+
+        document.head.appendChild(
+            style
+        );
+
+        summaryGrid.parentElement.insertBefore(
+            wrapper,
+            summaryGrid
+        );
+
+        monthSelector =
+            document.getElementById(
+                "dashboardMonthSelector"
+            );
+
+        monthSelector.addEventListener(
+            "change",
+            () => {
+
+                selectedMonth =
+                    monthSelector.value;
+
+                updateSelectedMonth();
+
+            }
+        );
+
     }
 
+    // =========================================================
+    // MONTH LIST
+    // =========================================================
 
-    // ========================================
+    function getAvailableMonths() {
+
+        const months =
+            new Set();
+
+        allTransactions.forEach(
+            transaction => {
+
+                if (!transaction.date) {
+                    return;
+                }
+
+                months.add(
+                    String(
+                        transaction.date
+                    ).substring(
+                        0,
+                        7
+                    )
+                );
+
+            }
+        );
+
+        // Always include current month.
+        months.add(
+            getCurrentMonth()
+        );
+
+        return Array.from(
+            months
+        )
+            .sort()
+            .reverse();
+
+    }
+
+    // =========================================================
+    // UPDATE MONTH SELECTOR
+    // =========================================================
+
+    function updateMonthSelector() {
+
+        createMonthSelector();
+
+        if (!monthSelector) {
+            return;
+        }
+
+        const months =
+            getAvailableMonths();
+
+        if (
+            !months.includes(
+                selectedMonth
+            )
+        ) {
+
+            selectedMonth =
+                months[0] ||
+                getCurrentMonth();
+
+        }
+
+        monthSelector.innerHTML =
+            "";
+
+        months.forEach(
+            monthKey => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    monthKey;
+
+                option.textContent =
+                    formatMonthName(
+                        monthKey
+                    );
+
+                monthSelector.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        monthSelector.value =
+            selectedMonth;
+
+    }
+
+    // =========================================================
+    // GET SELECTED MONTH TRANSACTIONS
+    // =========================================================
+
+    function getSelectedMonthTransactions() {
+
+        return allTransactions.filter(
+            transaction => {
+
+                if (!transaction.date) {
+                    return false;
+                }
+
+                return String(
+                    transaction.date
+                ).substring(
+                    0,
+                    7
+                ) === selectedMonth;
+
+            }
+        );
+
+    }
+
+    // =========================================================
+    // UPDATE SELECTED MONTH
+    // =========================================================
+
+    function updateSelectedMonth() {
+
+        updateMonthSelector();
+
+        const monthTransactions =
+            getSelectedMonthTransactions();
+
+        updateSummary(
+            monthTransactions
+        );
+
+        updateChart(
+            monthTransactions
+        );
+
+        displayTransactions(
+            monthTransactions
+        );
+
+        updateMonthTitle();
+
+    }
+
+    // =========================================================
+    // MONTH TITLE
+    // =========================================================
+
+    function updateMonthTitle() {
+
+        let title =
+            document.getElementById(
+                "selectedMonthTitle"
+            );
+
+        if (!title) {
+
+            const summaryGrid =
+                document.querySelector(
+                    ".summary-grid"
+                );
+
+            if (!summaryGrid) {
+                return;
+            }
+
+            title =
+                document.createElement(
+                    "div"
+                );
+
+            title.id =
+                "selectedMonthTitle";
+
+            title.className =
+                "selected-month-title";
+
+            summaryGrid.parentElement.insertBefore(
+                title,
+                summaryGrid
+            );
+
+        }
+
+        title.textContent =
+            `${formatMonthName(
+                selectedMonth
+            )} — Monthly Summary`;
+
+    }
+
+    // =========================================================
     // ADD TRANSACTION
-    // ========================================
+    // =========================================================
 
-    if (form) {
+    if (transactionForm) {
 
-        form.addEventListener(
+        transactionForm.addEventListener(
             "submit",
             async event => {
 
                 event.preventDefault();
 
                 clearTransactionMessage();
-
 
                 const descriptionValue =
                     description
@@ -303,7 +633,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const amountValue =
                     amount
-                        ? Number(amount.value)
+                        ? Number(
+                            amount.value
+                        )
                         : 0;
 
                 const categoryValue =
@@ -320,7 +652,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     date
                         ? date.value
                         : "";
-
 
                 if (
                     !descriptionValue ||
@@ -339,16 +670,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
+                addTransactionBtn.disabled =
+                    true;
 
-                if (addBtn) {
-
-                    addBtn.disabled = true;
-
-                    addBtn.textContent =
-                        "Adding...";
-
-                }
-
+                addTransactionBtn.textContent =
+                    "Adding...";
 
                 try {
 
@@ -379,33 +705,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                             });
 
-
                     if (error) {
                         throw error;
                     }
-
 
                     showTransactionMessage(
                         "Transaction added successfully.",
                         "success"
                     );
 
+                    // After adding, select the month
+                    // of the new transaction.
+                    selectedMonth =
+                        dateValue.substring(
+                            0,
+                            7
+                        );
 
-                    form.reset();
-
+                    transactionForm.reset();
 
                     if (date) {
-                        date.value = today();
+                        date.value =
+                            today();
                     }
-
 
                     if (type) {
-                        type.value = "expense";
+                        type.value =
+                            "expense";
                     }
 
-
                     await loadTransactions();
-
 
                 } catch (error) {
 
@@ -413,7 +742,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "Add transaction error:",
                         error
                     );
-
 
                     showTransactionMessage(
                         error.message ||
@@ -423,14 +751,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 } finally {
 
-                    if (addBtn) {
+                    addTransactionBtn.disabled =
+                        false;
 
-                        addBtn.disabled = false;
-
-                        addBtn.textContent =
-                            "Add Transaction";
-
-                    }
+                    addTransactionBtn.textContent =
+                        "Add Transaction";
 
                 }
 
@@ -439,23 +764,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
+    // =========================================================
     // LOAD TRANSACTIONS
-    // ========================================
+    // =========================================================
 
     async function loadTransactions() {
 
-        if (loading) {
+        if (loadingTransactions) {
 
-            loading.style.display =
+            loadingTransactions.style.display =
                 "block";
 
-            loading.textContent =
+            loadingTransactions.textContent =
                 "Loading transactions...";
 
         }
-
 
         try {
 
@@ -483,36 +806,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
                     );
 
-
             if (error) {
                 throw error;
             }
 
-
             allTransactions =
                 data || [];
 
+            updateMonthSelector();
 
-            if (loading) {
+            updateSelectedMonth();
 
-                loading.style.display =
+            if (loadingTransactions) {
+
+                loadingTransactions.style.display =
                     "none";
 
             }
-
-
-            displayTransactions(
-                allTransactions
-            );
-
-            updateSummary(
-                allTransactions
-            );
-
-            updateChart(
-                allTransactions
-            );
-
 
         } catch (error) {
 
@@ -521,13 +831,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
+            if (loadingTransactions) {
 
-            if (loading) {
-
-                loading.style.display =
+                loadingTransactions.style.display =
                     "block";
 
-                loading.textContent =
+                loadingTransactions.textContent =
                     "Could not load transactions.";
 
             }
@@ -536,430 +845,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
-    // DISPLAY TRANSACTIONS
-    // ========================================
-
-    function displayTransactions(items) {
-
-        if (!transactionsBody) {
-            return;
-        }
-
-
-        transactionsBody.innerHTML = "";
-
-
-        if (!items || !items.length) {
-
-            transactionsBody.innerHTML = `
-
-                <tr>
-
-                    <td
-                        colspan="6"
-                        class="empty"
-                    >
-                        No transactions found.
-                    </td>
-
-                </tr>
-
-            `;
-
-            return;
-
-        }
-
-
-        items.forEach(
-            transaction => {
-
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                const isIncome =
-                    String(
-                        transaction.type || ""
-                    ).toLowerCase() ===
-                    "income";
-
-
-                const amountValue =
-                    Number(
-                        transaction.amount
-                    ) || 0;
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(
-                            transaction.description
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            transaction.category
-                        )}
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="badge ${
-                                isIncome
-                                    ? "income"
-                                    : "expense"
-                            }"
-                        >
-
-                            ${
-                                isIncome
-                                    ? "Income"
-                                    : "Expense"
-                            }
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-                        ${formatDate(
-                            transaction.date
-                        )}
-                    </td>
-
-
-                    <td
-                        class="${
-                            isIncome
-                                ? "income-text"
-                                : "expense-text"
-                        }"
-                    >
-
-                        ${
-                            isIncome
-                                ? "+"
-                                : "-"
-                        }₹${amountValue.toLocaleString(
-                            "en-IN",
-                            {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            }
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        <div
-                            class="transaction-actions"
-                        >
-
-                            <button
-                                type="button"
-                                class="edit-btn"
-                                data-id="${transaction.id}"
-                            >
-                                Edit
-                            </button>
-
-
-                            <button
-                                type="button"
-                                class="delete-btn"
-                                data-id="${transaction.id}"
-                            >
-                                Delete
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                `;
-
-
-                transactionsBody.appendChild(
-                    tr
-                );
-
-            }
-        );
-
-
-        // ====================================
-        // EDIT BUTTON
-        // ====================================
-
-        transactionsBody
-            .querySelectorAll(".edit-btn")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            openEditModal(
-                                button.dataset.id
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-
-        // ====================================
-        // DELETE BUTTON
-        // ====================================
-
-        transactionsBody
-            .querySelectorAll(".delete-btn")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            deleteTransaction(
-                                button.dataset.id
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-
-
-    // ========================================
-    // SEARCH
-    // ========================================
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            () => {
-
-                const text =
-                    searchInput.value
-                        .trim()
-                        .toLowerCase();
-
-
-                if (!text) {
-
-                    displayTransactions(
-                        allTransactions
-                    );
-
-                    return;
-
-                }
-
-
-                const filtered =
-                    allTransactions.filter(
-                        transaction => {
-
-                            const description =
-                                String(
-                                    transaction.description ||
-                                    ""
-                                ).toLowerCase();
-
-                            const category =
-                                String(
-                                    transaction.category ||
-                                    ""
-                                ).toLowerCase();
-
-                            const transactionType =
-                                String(
-                                    transaction.type ||
-                                    ""
-                                ).toLowerCase();
-
-                            const rawDate =
-                                String(
-                                    transaction.date ||
-                                    ""
-                                ).toLowerCase();
-
-                            const displayDate =
-                                formatDate(
-                                    transaction.date
-                                ).toLowerCase();
-
-                            const amountText =
-                                String(
-                                    transaction.amount ||
-                                    ""
-                                ).toLowerCase();
-
-                            const formattedAmount =
-                                Number(
-                                    transaction.amount ||
-                                    0
-                                )
-                                    .toLocaleString(
-                                        "en-IN",
-                                        {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }
-                                    )
-                                    .toLowerCase();
-
-
-                            return (
-
-                                description.includes(
-                                    text
-                                )
-
-                                ||
-
-                                category.includes(
-                                    text
-                                )
-
-                                ||
-
-                                transactionType.includes(
-                                    text
-                                )
-
-                                ||
-
-                                rawDate.includes(
-                                    text
-                                )
-
-                                ||
-
-                                displayDate.includes(
-                                    text
-                                )
-
-                                ||
-
-                                amountText.includes(
-                                    text
-                                )
-
-                                ||
-
-                                formattedAmount.includes(
-                                    text
-                                )
-
-                            );
-
-                        }
-                    );
-
-
-                displayTransactions(
-                    filtered
-                );
-
-            }
-        );
-
-    }
-
-
-    // ========================================
-    // DELETE TRANSACTION
-    // ========================================
-
-    async function deleteTransaction(id) {
-
-        if (
-            !confirm(
-                "Delete this transaction?"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("transactions")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "user_id",
-                        user.id
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            await loadTransactions();
-
-
-        } catch (error) {
-
-            console.error(
-                "Delete error:",
-                error
-            );
-
-
-            alert(
-                error.message ||
-                "Could not delete transaction."
-            );
-
-        }
-
-    }
-
-
-    // ========================================
+    // =========================================================
     // SUMMARY
-    // ========================================
+    // =========================================================
 
     function updateSummary(items) {
 
-        let income = 0;
+        let totalIncome = 0;
 
-        let expense = 0;
-
+        let totalExpense = 0;
 
         items.forEach(
             transaction => {
@@ -969,78 +863,87 @@ document.addEventListener("DOMContentLoaded", async () => {
                         transaction.amount
                     ) || 0;
 
-
                 const transactionType =
                     String(
-                        transaction.type
+                        transaction.type ||
+                        ""
                     ).toLowerCase();
-
 
                 if (
                     transactionType ===
                     "income"
                 ) {
 
-                    income += value;
+                    totalIncome +=
+                        value;
 
                 } else {
 
-                    expense += value;
+                    totalExpense +=
+                        value;
 
                 }
 
             }
         );
 
+        const currentBalance =
+            totalIncome -
+            totalExpense;
 
-        const balance =
-            income - expense;
+        if (balance) {
 
-
-        if (incomeEl) {
-
-            incomeEl.textContent =
-                currency(income);
-
-        }
-
-
-        if (expenseEl) {
-
-            expenseEl.textContent =
-                currency(expense);
+            balance.textContent =
+                currency(
+                    currentBalance
+                );
 
         }
 
+        if (income) {
 
-        if (balanceEl) {
-
-            balanceEl.textContent =
-                currency(balance);
+            income.textContent =
+                currency(
+                    totalIncome
+                );
 
         }
 
+        if (expense) {
+
+            expense.textContent =
+                currency(
+                    totalExpense
+                );
+
+        }
 
         if (savingMessage) {
 
-            if (balance > 0) {
+            if (
+                currentBalance > 0
+            ) {
 
                 savingMessage.textContent =
-                    "You are saving money.";
+                    `You are saving money in ${formatMonthName(
+                        selectedMonth
+                    )}.`;
 
-            }
-
-            else if (balance < 0) {
-
-                savingMessage.textContent =
-                    "Your expenses are higher than your income.";
-
-            }
-
-            else {
+            } else if (
+                currentBalance < 0
+            ) {
 
                 savingMessage.textContent =
-                    "Your balance is zero.";
+                    `Your expenses are higher than your income in ${formatMonthName(
+                        selectedMonth
+                    )}.`;
+
+            } else {
+
+                savingMessage.textContent =
+                    `Your balance is zero in ${formatMonthName(
+                        selectedMonth
+                    )}.`;
 
             }
 
@@ -1048,13 +951,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
+    // =========================================================
     // EXPENSE CHART
-    // ========================================
-
-    let expenseChart = null;
-
+    // =========================================================
 
     function updateChart(items) {
 
@@ -1073,11 +972,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "chartLegend"
             );
 
-
         if (!canvas) {
             return;
         }
-
 
         if (
             typeof Chart ===
@@ -1092,17 +989,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
+        // IMPORTANT:
+        // items are already selected-month transactions.
+        // Therefore the chart cannot mix months.
 
-        const categories = {};
-
+        const categoryTotals = {};
 
         items.forEach(
             transaction => {
 
-                if (
+                const transactionType =
                     String(
-                        transaction.type || ""
-                    ).toLowerCase() !==
+                        transaction.type ||
+                        ""
+                    ).toLowerCase();
+
+                if (
+                    transactionType !==
                     "expense"
                 ) {
 
@@ -1110,46 +1013,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
-                const name =
+                const categoryName =
                     String(
                         transaction.category ||
                         "Other"
                     );
-
 
                 const value =
                     Number(
                         transaction.amount
                     ) || 0;
 
-
                 if (value <= 0) {
                     return;
                 }
 
-
-                categories[name] =
+                categoryTotals[
+                    categoryName
+                ] =
                     (
-                        categories[name] ||
-                        0
+                        categoryTotals[
+                            categoryName
+                        ] || 0
                     ) + value;
 
             }
         );
 
-
         const labels =
             Object.keys(
-                categories
+                categoryTotals
             );
-
 
         const values =
             Object.values(
-                categories
+                categoryTotals
             );
-
 
         if (expenseChart) {
 
@@ -1160,7 +1059,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (chartLegend) {
 
             chartLegend.innerHTML =
@@ -1168,29 +1066,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (!labels.length) {
 
             canvas.style.display =
                 "none";
-
 
             if (chartEmpty) {
 
                 chartEmpty.style.display =
                     "flex";
 
-            }
+                chartEmpty.textContent =
+                    `No expenses in ${formatMonthName(
+                        selectedMonth
+                    )}.`;
 
+            }
 
             return;
 
         }
 
-
         canvas.style.display =
             "block";
-
 
         if (chartEmpty) {
 
@@ -1199,35 +1097,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
-        // ====================================
-        // CHART COLORS
-        // ====================================
-
-        const chartColors = [
+        const colors = [
 
             "#4F46E5",
-
             "#16A085",
-
             "#F59E0B",
-
             "#EF4444",
-
             "#8B5CF6",
-
             "#06B6D4",
-
             "#EC4899",
-
             "#84CC16",
-
             "#F97316",
-
             "#64748B"
 
         ];
 
+        const totalExpense =
+            values.reduce(
+                (
+                    total,
+                    value
+                ) =>
+                    total +
+                    Number(value),
+                0
+            );
 
         expenseChart =
             new Chart(
@@ -1236,7 +1130,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     type:
                         "doughnut",
-
 
                     data: {
 
@@ -1256,9 +1149,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                                             _,
                                             index
                                         ) =>
-                                            chartColors[
+                                            colors[
                                                 index %
-                                                chartColors.length
+                                                colors.length
                                             ]
                                     ),
 
@@ -1277,7 +1170,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     },
 
-
                     options: {
 
                         responsive:
@@ -1289,16 +1181,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         cutout:
                             "58%",
 
-
                         plugins: {
 
+                            // Hide Chart.js legend.
+                            // Custom colored legend is used.
                             legend: {
 
-                                position:
-                                    "bottom"
+                                display:
+                                    false
 
                             },
-
 
                             tooltip: {
 
@@ -1312,41 +1204,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                                                     context.raw
                                                 ) || 0;
 
-
-                                            const total =
-                                                values.reduce(
-                                                    (
-                                                        sum,
-                                                        item
-                                                    ) =>
-                                                        sum +
-                                                        Number(
-                                                            item
-                                                        ),
-                                                    0
-                                                );
-
-
                                             const percentage =
-                                                total > 0
+                                                totalExpense > 0
                                                     ? (
                                                         value /
-                                                        total
+                                                        totalExpense
                                                     ) *
                                                     100
                                                     : 0;
 
-
                                             return (
-                                                `${context.label}: ₹` +
-                                                value.toLocaleString(
-                                                    "en-IN",
-                                                    {
-                                                        minimumFractionDigits: 2,
-                                                        maximumFractionDigits: 2
-                                                    }
+                                                `${context.label}: ` +
+                                                currency(
+                                                    value
                                                 ) +
-                                                ` (${percentage.toFixed(1)}%)`
+                                                ` (${percentage.toFixed(
+                                                    1
+                                                )}%)`
                                             );
 
                                         }
@@ -1362,24 +1236,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-
-        // ====================================
-        // CUSTOM LEGEND
-        // ====================================
+        // =====================================================
+        // COLORED LEGEND
+        // =====================================================
 
         if (chartLegend) {
-
-            const total =
-                values.reduce(
-                    (
-                        sum,
-                        value
-                    ) =>
-                        sum +
-                        Number(value),
-                    0
-                );
-
 
             labels.forEach(
                 (
@@ -1392,56 +1253,51 @@ document.addEventListener("DOMContentLoaded", async () => {
                             values[index]
                         ) || 0;
 
-
                     const percentage =
-                        total > 0
+                        totalExpense > 0
                             ? (
                                 value /
-                                total
+                                totalExpense
                             ) *
                             100
                             : 0;
-
 
                     const item =
                         document.createElement(
                             "div"
                         );
 
-
                     item.className =
                         "chart-legend-item";
 
-
-                    const dot =
+                    const colorBox =
                         document.createElement(
                             "span"
                         );
 
-
-                    dot.className =
+                    colorBox.className =
                         "chart-legend-dot";
 
-
-                    dot.style.backgroundColor =
-                        chartColors[
+                    colorBox.style.backgroundColor =
+                        colors[
                             index %
-                            chartColors.length
+                            colors.length
                         ];
-
 
                     const text =
                         document.createElement(
                             "span"
                         );
 
-
                     text.textContent =
-                        `${label} • ${currency(value)} (${percentage.toFixed(1)}%)`;
-
+                        `${label} • ${currency(
+                            value
+                        )} (${percentage.toFixed(
+                            1
+                        )}%)`;
 
                     item.appendChild(
-                        dot
+                        colorBox
                     );
 
                     item.appendChild(
@@ -1459,17 +1315,443 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    // =========================================================
+    // CHART LEGEND STYLE
+    // =========================================================
 
-    // ========================================
+    function addChartLegendStyle() {
+
+        if (
+            document.getElementById(
+                "chartLegendFixStyles"
+            )
+        ) {
+            return;
+        }
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+        style.id =
+            "chartLegendFixStyles";
+
+        style.textContent = `
+
+            .chart-legend {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .chart-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: #0f2d55;
+                font-size: 15px;
+            }
+
+            .chart-legend-dot {
+                width: 11px;
+                height: 11px;
+                min-width: 11px;
+                border-radius: 3px;
+                display: inline-block;
+            }
+
+        `;
+
+        document.head.appendChild(
+            style
+        );
+
+    }
+
+    addChartLegendStyle();
+
+    // =========================================================
+    // DISPLAY TRANSACTIONS
+    // =========================================================
+
+    function displayTransactions(
+        items
+    ) {
+
+        if (!transactionsBody) {
+            return;
+        }
+
+        transactionsBody.innerHTML =
+            "";
+
+        if (
+            !items ||
+            !items.length
+        ) {
+
+            transactionsBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        No transactions found for ${formatMonthName(
+                            selectedMonth
+                        )}.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+        items.forEach(
+            transaction => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+                const isIncome =
+                    String(
+                        transaction.type ||
+                        ""
+                    ).toLowerCase() ===
+                    "income";
+
+                const value =
+                    Number(
+                        transaction.amount
+                    ) || 0;
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(
+                            transaction.description
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            transaction.category
+                        )}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="badge ${
+                                isIncome
+                                    ? "income"
+                                    : "expense"
+                            }"
+                        >
+                            ${
+                                isIncome
+                                    ? "Income"
+                                    : "Expense"
+                            }
+                        </span>
+
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            transaction.date
+                        )}
+                    </td>
+
+                    <td
+                        class="${
+                            isIncome
+                                ? "income-text"
+                                : "expense-text"
+                        }"
+                    >
+
+                        ${
+                            isIncome
+                                ? "+"
+                                : "-"
+                        }${currency(
+                            value
+                        )}
+
+                    </td>
+
+                    <td>
+
+                        <div
+                            class="transaction-actions"
+                        >
+
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-id="${transaction.id}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                data-id="${transaction.id}"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                `;
+
+                transactionsBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+        // =====================================================
+        // EDIT BUTTON
+        // =====================================================
+
+        transactionsBody
+            .querySelectorAll(
+                ".edit-btn"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            openEditModal(
+                                button.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        // =====================================================
+        // DELETE BUTTON
+        // =====================================================
+
+        transactionsBody
+            .querySelectorAll(
+                ".delete-btn"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            deleteTransaction(
+                                button.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    // =========================================================
+    // SEARCH
+    // =========================================================
+
+    if (transactionSearch) {
+
+        transactionSearch.addEventListener(
+            "input",
+            () => {
+
+                const searchText =
+                    transactionSearch.value
+                        .trim()
+                        .toLowerCase();
+
+                const monthTransactions =
+                    getSelectedMonthTransactions();
+
+                if (!searchText) {
+
+                    displayTransactions(
+                        monthTransactions
+                    );
+
+                    return;
+
+                }
+
+                const filtered =
+                    monthTransactions.filter(
+                        transaction => {
+
+                            const descriptionText =
+                                String(
+                                    transaction.description ||
+                                    ""
+                                ).toLowerCase();
+
+                            const categoryText =
+                                String(
+                                    transaction.category ||
+                                    ""
+                                ).toLowerCase();
+
+                            const typeText =
+                                String(
+                                    transaction.type ||
+                                    ""
+                                ).toLowerCase();
+
+                            const dateText =
+                                String(
+                                    transaction.date ||
+                                    ""
+                                ).toLowerCase();
+
+                            const amountText =
+                                String(
+                                    transaction.amount ||
+                                    ""
+                                ).toLowerCase();
+
+                            return (
+
+                                descriptionText
+                                    .includes(
+                                        searchText
+                                    )
+
+                                ||
+
+                                categoryText
+                                    .includes(
+                                        searchText
+                                    )
+
+                                ||
+
+                                typeText
+                                    .includes(
+                                        searchText
+                                    )
+
+                                ||
+
+                                dateText
+                                    .includes(
+                                        searchText
+                                    )
+
+                                ||
+
+                                amountText
+                                    .includes(
+                                        searchText
+                                    )
+
+                            );
+
+                        }
+                    );
+
+                displayTransactions(
+                    filtered
+                );
+
+            }
+        );
+
+    }
+
+    // =========================================================
+    // DELETE TRANSACTION
+    // =========================================================
+
+    async function deleteTransaction(
+        id
+    ) {
+
+        const confirmed =
+            confirm(
+                "Delete this transaction?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const {
+                error
+            } =
+                await supabase
+                    .from("transactions")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    )
+                    .eq(
+                        "user_id",
+                        user.id
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            await loadTransactions();
+
+        } catch (error) {
+
+            console.error(
+                "Delete error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Could not delete transaction."
+            );
+
+        }
+
+    }
+
+    // =========================================================
     // EDIT MODAL ELEMENTS
-    // ========================================
+    // =========================================================
 
     const editModal =
         document.getElementById(
             "editModal"
         );
 
-    const editForm =
+    const editTransactionForm =
         document.getElementById(
             "editTransactionForm"
         );
@@ -1504,12 +1786,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             "editDate"
         );
 
-    const editMessage =
+    const editTransactionMessage =
         document.getElementById(
             "editTransactionMessage"
         );
 
-    const closeEditModalBtn =
+    const closeEditModal =
         document.getElementById(
             "closeEditModal"
         );
@@ -1524,12 +1806,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             "saveEditBtn"
         );
 
-
-    // ========================================
+    // =========================================================
     // OPEN EDIT MODAL
-    // ========================================
+    // =========================================================
 
-    function openEditModal(id) {
+    function openEditModal(
+        id
+    ) {
 
         const transaction =
             allTransactions.find(
@@ -1537,7 +1820,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     String(item.id) ===
                     String(id)
             );
-
 
         if (!transaction) {
 
@@ -1550,14 +1832,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (editTransactionId) {
 
             editTransactionId.value =
                 transaction.id;
 
         }
-
 
         if (editDescription) {
 
@@ -1567,7 +1847,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (editAmount) {
 
             editAmount.value =
@@ -1576,7 +1855,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (editCategory) {
 
             editCategory.value =
@@ -1584,7 +1862,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "";
 
         }
-
 
         if (editType) {
 
@@ -1596,7 +1873,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         if (editDate) {
 
             editDate.value =
@@ -1605,17 +1881,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
+        if (
+            editTransactionMessage
+        ) {
 
-        if (editMessage) {
-
-            editMessage.textContent =
+            editTransactionMessage.textContent =
                 "";
 
-            editMessage.className =
+            editTransactionMessage.className =
                 "message";
 
         }
-
 
         if (editModal) {
 
@@ -1631,12 +1907,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
+    // =========================================================
     // CLOSE EDIT MODAL
-    // ========================================
+    // =========================================================
 
-    function closeEditModal() {
+    function closeEditModalWindow() {
 
         if (editModal) {
 
@@ -1650,62 +1925,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
-        if (editForm) {
-
-            editForm.reset();
-
-        }
-
-
-        if (editTransactionId) {
-
-            editTransactionId.value =
-                "";
-
-        }
-
-
-        if (editMessage) {
-
-            editMessage.textContent =
-                "";
-
-            editMessage.className =
-                "message";
-
-        }
-
     }
 
+    if (closeEditModal) {
 
-    // ========================================
-    // CLOSE BUTTONS
-    // ========================================
-
-    if (closeEditModalBtn) {
-
-        closeEditModalBtn.addEventListener(
+        closeEditModal.addEventListener(
             "click",
-            closeEditModal
+            closeEditModalWindow
         );
 
     }
-
 
     if (cancelEditBtn) {
 
         cancelEditBtn.addEventListener(
             "click",
-            closeEditModal
+            closeEditModalWindow
         );
 
     }
-
-
-    // ========================================
-    // CLICK OUTSIDE MODAL
-    // ========================================
 
     if (editModal) {
 
@@ -1718,7 +1956,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     editModal
                 ) {
 
-                    closeEditModal();
+                    closeEditModalWindow();
 
                 }
 
@@ -1726,11 +1964,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
     }
-
-
-    // ========================================
-    // ESC KEY
-    // ========================================
 
     document.addEventListener(
         "keydown",
@@ -1748,7 +1981,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     )
                 ) {
 
-                    closeEditModal();
+                    closeEditModalWindow();
 
                 }
 
@@ -1757,31 +1990,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     );
 
+    // =========================================================
+    // SAVE EDIT
+    // =========================================================
 
-    // ========================================
-    // SAVE EDITED TRANSACTION
-    // ========================================
+    if (editTransactionForm) {
 
-    if (editForm) {
-
-        editForm.addEventListener(
+        editTransactionForm.addEventListener(
             "submit",
             async event => {
 
                 event.preventDefault();
-
 
                 const id =
                     editTransactionId
                         ? editTransactionId.value
                         : "";
 
-
                 const descriptionValue =
                     editDescription
                         ? editDescription.value.trim()
                         : "";
-
 
                 const amountValue =
                     editAmount
@@ -1790,24 +2019,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                         )
                         : 0;
 
-
                 const categoryValue =
                     editCategory
                         ? editCategory.value
                         : "";
-
 
                 const typeValue =
                     editType
                         ? editType.value
                         : "expense";
 
-
                 const dateValue =
                     editDate
                         ? editDate.value
                         : "";
-
 
                 if (!id) {
 
@@ -1820,7 +2045,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
                 if (!descriptionValue) {
 
                     showEditMessage(
@@ -1831,7 +2055,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
 
                 }
-
 
                 if (
                     !amountValue ||
@@ -1847,7 +2070,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
                 if (!categoryValue) {
 
                     showEditMessage(
@@ -1858,7 +2080,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
 
                 }
-
 
                 if (!dateValue) {
 
@@ -1871,7 +2092,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
                 if (saveEditBtn) {
 
                     saveEditBtn.disabled =
@@ -1881,7 +2101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "Saving...";
 
                 }
-
 
                 try {
 
@@ -1917,38 +2136,40 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 user.id
                             );
 
-
                     if (error) {
                         throw error;
                     }
-
 
                     showEditMessage(
                         "Transaction updated successfully.",
                         "success"
                     );
 
+                    // If edited transaction belongs
+                    // to another month, select that month.
+                    selectedMonth =
+                        dateValue.substring(
+                            0,
+                            7
+                        );
 
                     await loadTransactions();
-
 
                     setTimeout(
                         () => {
 
-                            closeEditModal();
+                            closeEditModalWindow();
 
                         },
                         500
                     );
 
-
                 } catch (error) {
 
                     console.error(
-                        "Update transaction error:",
+                        "Update error:",
                         error
                     );
-
 
                     showEditMessage(
                         error.message ||
@@ -1975,33 +2196,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
+    // =========================================================
     // EDIT MESSAGE
-    // ========================================
+    // =========================================================
 
     function showEditMessage(
         text,
-        messageType
+        type
     ) {
 
-        if (!editMessage) {
+        if (
+            !editTransactionMessage
+        ) {
+
             return;
+
         }
 
-
-        editMessage.textContent =
+        editTransactionMessage.textContent =
             text;
 
-        editMessage.className =
-            `message ${messageType}`;
+        editTransactionMessage.className =
+            `message ${type}`;
 
     }
 
-
-    // ========================================
-    // STATEMENT ELEMENTS
-    // ========================================
+    // =========================================================
+    // STATEMENTS
+    // =========================================================
 
     const statementType =
         document.getElementById(
@@ -2063,29 +2285,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             "statementBody"
         );
 
-
     let currentStatementTransactions =
         [];
 
     let currentStatementTitle =
         "";
 
-
-    // ========================================
-    // DEFAULT MONTH
-    // ========================================
-
     if (statementMonth) {
 
         statementMonth.value =
-            currentMonth();
+            getCurrentMonth();
 
     }
-
-
-    // ========================================
-    // STATEMENT TYPE CHANGE
-    // ========================================
 
     if (statementType) {
 
@@ -2098,7 +2309,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "monthly"
                 ) {
 
-                    if (statementMonthGroup) {
+                    if (
+                        statementMonthGroup
+                    ) {
 
                         statementMonthGroup.style.display =
                             "block";
@@ -2107,7 +2320,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 } else {
 
-                    if (statementMonthGroup) {
+                    if (
+                        statementMonthGroup
+                    ) {
 
                         statementMonthGroup.style.display =
                             "none";
@@ -2116,44 +2331,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
-                if (statementResult) {
-
-                    statementResult.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-
-                if (downloadStatementBtn) {
-
-                    downloadStatementBtn.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-
-                if (statementMessage) {
-
-                    statementMessage.textContent =
-                        "";
-
-                    statementMessage.className =
-                        "message";
-
-                }
-
             }
         );
 
     }
 
-
-    // ========================================
+    // =========================================================
     // GENERATE STATEMENT
-    // ========================================
+    // =========================================================
 
     if (generateStatementBtn) {
 
@@ -2164,8 +2349,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
     async function generateStatement() {
+
+        if (statementResult) {
+
+            statementResult.classList.add(
+                "hidden"
+            );
+
+        }
+
+        if (downloadStatementBtn) {
+
+            downloadStatementBtn.classList.add(
+                "hidden"
+            );
+
+        }
 
         if (statementMessage) {
 
@@ -2177,35 +2377,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
+        generateStatementBtn.disabled =
+            true;
 
-        if (statementResult) {
-
-            statementResult.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        if (downloadStatementBtn) {
-
-            downloadStatementBtn.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        if (generateStatementBtn) {
-
-            generateStatementBtn.disabled =
-                true;
-
-            generateStatementBtn.textContent =
-                "Generating...";
-
-        }
-
+        generateStatementBtn.textContent =
+            "Generating...";
 
         try {
 
@@ -2214,11 +2390,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             let endDate;
 
             let title;
-
-
-            // ====================================
-            // MONTHLY
-            // ====================================
 
             if (
                 statementType &&
@@ -2237,19 +2408,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }
 
-
-                const [
-                    year,
-                    month
-                ] =
+                const parts =
                     statementMonth.value
-                        .split("-")
-                        .map(Number);
+                        .split("-");
 
+                const year =
+                    Number(parts[0]);
+
+                const month =
+                    Number(parts[1]);
 
                 startDate =
-                    `${year}-${String(month).padStart(2, "0")}-01`;
-
+                    `${year}-${String(
+                        month
+                    ).padStart(
+                        2,
+                        "0"
+                    )}-01`;
 
                 const lastDay =
                     new Date(
@@ -2258,38 +2433,28 @@ document.addEventListener("DOMContentLoaded", async () => {
                         0
                     ).getDate();
 
-
                 endDate =
-                    `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
-
-
-                const monthName =
-                    new Date(
-                        year,
-                        month - 1,
-                        1
-                    ).toLocaleString(
-                        "en-IN",
-                        {
-                            month: "long"
-                        }
-                    );
-
+                    `${year}-${String(
+                        month
+                    ).padStart(
+                        2,
+                        "0"
+                    )}-${String(
+                        lastDay
+                    ).padStart(
+                        2,
+                        "0"
+                    )}`;
 
                 title =
-                    `${monthName} ${year} Statement`;
+                    `${formatMonthName(
+                        statementMonth.value
+                    )} Statement`;
 
-            }
-
-            // ====================================
-            // WEEKLY
-            // ====================================
-
-            else {
+            } else {
 
                 const range =
                     getCurrentWeekRange();
-
 
                 startDate =
                     range.start;
@@ -2297,16 +2462,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 endDate =
                     range.end;
 
-
                 title =
-                    `Weekly Statement (${formatDate(startDate)} to ${formatDate(endDate)})`;
+                    `Weekly Statement (${formatDate(
+                        startDate
+                    )} to ${formatDate(
+                        endDate
+                    )})`;
 
             }
-
-
-            // ====================================
-            // GET DATA
-            // ====================================
 
             const {
                 data,
@@ -2340,33 +2503,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
                     );
 
-
             if (error) {
                 throw error;
             }
 
-
-            const transactions =
-                data || [];
-
-
             currentStatementTransactions =
-                transactions;
+                data || [];
 
             currentStatementTitle =
                 title;
 
+            let statementIncomeValue =
+                0;
 
-            // ====================================
-            // TOTALS
-            // ====================================
+            let statementExpenseValue =
+                0;
 
-            let income = 0;
-
-            let expense = 0;
-
-
-            transactions.forEach(
+            currentStatementTransactions.forEach(
                 transaction => {
 
                     const value =
@@ -2374,33 +2527,30 @@ document.addEventListener("DOMContentLoaded", async () => {
                             transaction.amount
                         ) || 0;
 
-
                     if (
                         String(
-                            transaction.type
+                            transaction.type ||
+                            ""
                         ).toLowerCase() ===
                         "income"
                     ) {
 
-                        income += value;
+                        statementIncomeValue +=
+                            value;
 
                     } else {
 
-                        expense += value;
+                        statementExpenseValue +=
+                            value;
 
                     }
 
                 }
             );
 
-
-            const balance =
-                income - expense;
-
-
-            // ====================================
-            // DISPLAY
-            // ====================================
+            const statementBalanceValue =
+                statementIncomeValue -
+                statementExpenseValue;
 
             if (statementTitle) {
 
@@ -2409,42 +2559,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
-
             if (statementIncome) {
 
                 statementIncome.textContent =
-                    currency(income);
+                    currency(
+                        statementIncomeValue
+                    );
 
             }
-
 
             if (statementExpense) {
 
                 statementExpense.textContent =
-                    currency(expense);
+                    currency(
+                        statementExpenseValue
+                    );
 
             }
-
 
             if (statementBalance) {
 
                 statementBalance.textContent =
-                    currency(balance);
+                    currency(
+                        statementBalanceValue
+                    );
 
             }
-
 
             if (statementBody) {
 
                 statementBody.innerHTML =
                     "";
 
-            }
-
-
-            if (!transactions.length) {
-
-                if (statementBody) {
+                if (
+                    !currentStatementTransactions.length
+                ) {
 
                     statementBody.innerHTML = `
 
@@ -2454,107 +2603,98 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 colspan="5"
                                 class="empty"
                             >
-                                No transactions found for this period.
+                                No transactions found.
                             </td>
 
                         </tr>
 
                     `;
 
-                }
+                } else {
 
-            } else {
+                    currentStatementTransactions.forEach(
+                        transaction => {
 
-                transactions.forEach(
-                    transaction => {
+                            const row =
+                                document.createElement(
+                                    "tr"
+                                );
 
-                        const tr =
-                            document.createElement(
-                                "tr"
-                            );
+                            const isIncome =
+                                String(
+                                    transaction.type ||
+                                    ""
+                                ).toLowerCase() ===
+                                "income";
 
+                            row.innerHTML = `
 
-                        const isIncome =
-                            String(
-                                transaction.type
-                            ).toLowerCase() ===
-                            "income";
+                                <td>
+                                    ${formatDate(
+                                        transaction.date
+                                    )}
+                                </td>
 
+                                <td>
+                                    ${escapeHtml(
+                                        transaction.description
+                                    )}
+                                </td>
 
-                        tr.innerHTML = `
+                                <td>
+                                    ${escapeHtml(
+                                        transaction.category
+                                    )}
+                                </td>
 
-                            <td>
-                                ${formatDate(
-                                    transaction.date
-                                )}
-                            </td>
+                                <td>
 
+                                    <span
+                                        class="badge ${
+                                            isIncome
+                                                ? "income"
+                                                : "expense"
+                                        }"
+                                    >
+                                        ${
+                                            isIncome
+                                                ? "Income"
+                                                : "Expense"
+                                        }
+                                    </span>
 
-                            <td>
-                                ${escapeHtml(
-                                    transaction.description
-                                )}
-                            </td>
+                                </td>
 
-
-                            <td>
-                                ${escapeHtml(
-                                    transaction.category
-                                )}
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="badge ${
+                                <td
+                                    class="${
                                         isIncome
-                                            ? "income"
-                                            : "expense"
+                                            ? "income-text"
+                                            : "expense-text"
                                     }"
                                 >
 
                                     ${
                                         isIncome
-                                            ? "Income"
-                                            : "Expense"
-                                    }
+                                            ? "+"
+                                            : "-"
+                                    }${currency(
+                                        transaction.amount
+                                    )}
 
-                                </span>
+                                </td>
 
-                            </td>
+                            `;
 
+                            statementBody.appendChild(
+                                row
+                            );
 
-                            <td
-                                class="${
-                                    isIncome
-                                        ? "income-text"
-                                        : "expense-text"
-                                }"
-                            >
+                        }
+                    );
 
-                                ${
-                                    isIncome
-                                        ? "+"
-                                        : "-"
-                                }${currency(
-                                    transaction.amount
-                                )}
-
-                            </td>
-
-                        `;
-
-
-                        statementBody.appendChild(
-                            tr
-                        );
-
-                    }
-                );
+                }
 
             }
-
 
             if (statementResult) {
 
@@ -2564,9 +2704,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
-
             if (
-                transactions.length &&
+                currentStatementTransactions.length &&
                 downloadStatementBtn
             ) {
 
@@ -2583,7 +2722,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 error
             );
 
-
             if (statementMessage) {
 
                 statementMessage.textContent =
@@ -2597,22 +2735,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         } finally {
 
-            if (generateStatementBtn) {
+            generateStatementBtn.disabled =
+                false;
 
-                generateStatementBtn.disabled =
-                    false;
-
-                generateStatementBtn.textContent =
-                    "Generate Statement";
-
-            }
+            generateStatementBtn.textContent =
+                "Generate Statement";
 
         }
 
     }
-    // ========================================
-    // DOWNLOAD STATEMENT
-    // ========================================
+
+    // =========================================================
+    // DOWNLOAD CSV
+    // =========================================================
 
     if (downloadStatementBtn) {
 
@@ -2622,7 +2757,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
     }
-
 
     function downloadStatement() {
 
@@ -2638,35 +2772,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         let csv =
             "Date,Description,Category,Type,Amount\n";
-
 
         currentStatementTransactions.forEach(
             transaction => {
 
-                const description =
+                const descriptionValue =
                     String(
                         transaction.description ||
                         ""
-                    )
-                    .replaceAll(
+                    ).replaceAll(
                         '"',
                         '""'
                     );
 
-
-                const category =
+                const categoryValue =
                     String(
                         transaction.category ||
                         ""
-                    )
-                    .replaceAll(
+                    ).replaceAll(
                         '"',
                         '""'
                     );
-
 
                 const transactionType =
                     String(
@@ -2677,23 +2805,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ? "Income"
                         : "Expense";
 
-
                 const amountValue =
                     Number(
                         transaction.amount
                     ) || 0;
 
-
                 csv +=
                     `"${transaction.date}",` +
-                    `"${description}",` +
-                    `"${category}",` +
+                    `"${descriptionValue}",` +
+                    `"${categoryValue}",` +
                     `"${transactionType}",` +
-                    `"${amountValue.toFixed(2)}"\n`;
+                    `"${amountValue.toFixed(
+                        2
+                    )}"\n`;
 
             }
         );
-
 
         const blob =
             new Blob(
@@ -2704,22 +2831,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             );
 
-
         const url =
             URL.createObjectURL(
                 blob
             );
-
 
         const link =
             document.createElement(
                 "a"
             );
 
-
         link.href =
             url;
-
 
         link.download =
             (
@@ -2740,19 +2863,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ) +
             ".csv";
 
-
         document.body.appendChild(
             link
         );
 
-
         link.click();
-
 
         document.body.removeChild(
             link
         );
-
 
         URL.revokeObjectURL(
             url
@@ -2760,113 +2879,87 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    // =========================================================
+    // REFRESH
+    // =========================================================
 
-    // ========================================
-    // CURRENT WEEK
-    // ========================================
+    if (refreshBtn) {
 
-    function getCurrentWeekRange() {
+        refreshBtn.addEventListener(
+            "click",
+            async () => {
 
-        const current =
-            new Date();
+                refreshBtn.disabled =
+                    true;
 
+                const originalText =
+                    refreshBtn.textContent;
 
-        const day =
-            current.getDay();
+                refreshBtn.textContent =
+                    "Refreshing...";
 
+                try {
 
-        const mondayOffset =
-            day === 0
-                ? -6
-                : 1 - day;
+                    await loadTransactions();
 
+                } finally {
 
-        const monday =
-            new Date(
-                current
-            );
+                    refreshBtn.disabled =
+                        false;
 
+                    refreshBtn.textContent =
+                        originalText;
 
-        monday.setDate(
-            current.getDate() +
-            mondayOffset
+                }
+
+            }
         );
-
-
-        monday.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-
-        const sunday =
-            new Date(
-                monday
-            );
-
-
-        sunday.setDate(
-            monday.getDate() +
-            6
-        );
-
-
-        sunday.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-
-        return {
-
-            start:
-                toDateString(
-                    monday
-                ),
-
-            end:
-                toDateString(
-                    sunday
-                )
-
-        };
 
     }
 
+    // =========================================================
+    // HELPERS
+    // =========================================================
 
-    // ========================================
-    // DATE HELPERS
-    // ========================================
+    function getCurrentMonth() {
 
-    function toDateString(
-        dateObject
-    ) {
+        const now =
+            new Date();
+
+        return (
+            `${now.getFullYear()}-${String(
+                now.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            )}`
+        );
+
+    }
+
+    function today() {
+
+        const now =
+            new Date();
 
         const year =
-            dateObject.getFullYear();
-
+            now.getFullYear();
 
         const month =
             String(
-                dateObject.getMonth() + 1
+                now.getMonth() + 1
             ).padStart(
                 2,
                 "0"
             );
-
 
         const day =
             String(
-                dateObject.getDate()
+                now.getDate()
             ).padStart(
                 2,
                 "0"
             );
-
 
         return (
             `${year}-${month}-${day}`
@@ -2874,30 +2967,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    function formatMonthName(
+        monthKey
+    ) {
 
-    function today() {
+        const parts =
+            String(
+                monthKey
+            ).split("-");
 
-        return toDateString(
-            new Date()
+        if (
+            parts.length !== 2
+        ) {
+
+            return monthKey;
+
+        }
+
+        const year =
+            Number(
+                parts[0]
+            );
+
+        const month =
+            Number(
+                parts[1]
+            );
+
+        return new Date(
+            year,
+            month - 1,
+            1
+        ).toLocaleString(
+            "en-IN",
+            {
+                month:
+                    "long",
+
+                year:
+                    "numeric"
+            }
         );
 
     }
-
-
-    function currentMonth() {
-
-        const d =
-            new Date();
-
-
-        return (
-            `${d.getFullYear()}-${String(
-                d.getMonth() + 1
-            ).padStart(2, "0")}`
-        );
-
-    }
-
 
     function formatDate(
         value
@@ -2907,14 +3019,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             return "-";
         }
 
-
         const parts =
             String(value).split("-");
 
-
         if (
-            parts.length ===
-            3
+            parts.length === 3
         ) {
 
             return (
@@ -2923,15 +3032,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-
         return value;
 
     }
-
-
-    // ========================================
-    // CURRENCY
-    // ========================================
 
     function currency(
         value
@@ -2954,11 +3057,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
     }
-
-
-    // ========================================
-    // HTML ESCAPE
-    // ========================================
 
     function escapeHtml(
         value
@@ -2990,11 +3088,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
-    // TRANSACTION MESSAGE
-    // ========================================
-
     function showTransactionMessage(
         text,
         messageType
@@ -3004,16 +3097,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-
         transactionMessage.textContent =
             text;
-
 
         transactionMessage.className =
             `message ${messageType}`;
 
     }
-
 
     function clearTransactionMessage() {
 
@@ -3021,69 +3111,117 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-
         transactionMessage.textContent =
             "";
-
 
         transactionMessage.className =
             "message";
 
     }
 
+    function getCurrentWeekRange() {
 
-    // ========================================
-    // REFRESH
-    // ========================================
+        const current =
+            new Date();
 
-    if (refreshBtn) {
+        const day =
+            current.getDay();
 
-        refreshBtn.addEventListener(
-            "click",
-            async () => {
+        const mondayOffset =
+            day === 0
+                ? -6
+                : 1 - day;
 
-                refreshBtn.disabled =
-                    true;
+        const monday =
+            new Date(
+                current
+            );
 
+        monday.setDate(
+            current.getDate() +
+            mondayOffset
+        );
 
-                const originalText =
-                    refreshBtn.textContent;
+        monday.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
+        const sunday =
+            new Date(
+                monday
+            );
 
-                refreshBtn.textContent =
-                    "Refreshing...";
+        sunday.setDate(
+            monday.getDate() +
+            6
+        );
 
+        sunday.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
-                try {
+        return {
 
-                    await loadTransactions();
+            start:
+                toDateString(
+                    monday
+                ),
 
-                } finally {
+            end:
+                toDateString(
+                    sunday
+                )
 
-                    refreshBtn.disabled =
-                        false;
+        };
 
-                    refreshBtn.textContent =
-                        originalText;
+    }
 
-                }
+    function toDateString(
+        dateObject
+    ) {
 
-            }
+        const year =
+            dateObject.getFullYear();
+
+        const month =
+            String(
+                dateObject.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+        const day =
+            String(
+                dateObject.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+        return (
+            `${year}-${month}-${day}`
         );
 
     }
 
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
 
-    // ========================================
-    // INITIAL LOAD
-    // ========================================
+    createMonthSelector();
 
     await loadTransactions();
 
-
-    // ========================================
+    // =========================================================
     // AUTH STATE
-    // ========================================
+    // =========================================================
 
     supabase.auth.onAuthStateChange(
         (
@@ -3095,17 +3233,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 event ===
                 "SIGNED_OUT"
             ) {
-
-                window.location.replace(
-                    "auth.html"
-                );
-
-                return;
-
-            }
-
-
-            if (!currentSession) {
 
                 window.location.replace(
                     "auth.html"
