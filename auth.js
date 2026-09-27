@@ -22,6 +22,15 @@ document.addEventListener(
         }
 
 
+        /*
+        ========================================
+        PRODUCTION AUTH URL
+        ========================================
+        */
+
+        const AUTH_REDIRECT_URL =
+            "https://muralikrishnan-4.github.io/Expense-Tracker/auth.html";
+
 
         /*
         ========================================
@@ -34,10 +43,19 @@ document.addEventListener(
                 "loginSection"
             );
 
-
         const signupSection =
             document.getElementById(
                 "signupSection"
+            );
+
+        const forgotSection =
+            document.getElementById(
+                "forgotSection"
+            );
+
+        const resetSection =
+            document.getElementById(
+                "resetSection"
             );
 
 
@@ -45,7 +63,6 @@ document.addEventListener(
             document.getElementById(
                 "loginEmail"
             );
-
 
         const loginPassword =
             document.getElementById(
@@ -58,16 +75,31 @@ document.addEventListener(
                 "signupName"
             );
 
-
         const signupEmail =
             document.getElementById(
                 "signupEmail"
             );
 
-
         const signupPassword =
             document.getElementById(
                 "signupPassword"
+            );
+
+
+        const forgotEmail =
+            document.getElementById(
+                "forgotEmail"
+            );
+
+
+        const newPassword =
+            document.getElementById(
+                "newPassword"
+            );
+
+        const confirmPassword =
+            document.getElementById(
+                "confirmPassword"
             );
 
 
@@ -76,10 +108,19 @@ document.addEventListener(
                 "loginBtn"
             );
 
-
         const signupBtn =
             document.getElementById(
                 "signupBtn"
+            );
+
+        const sendResetBtn =
+            document.getElementById(
+                "sendResetBtn"
+            );
+
+        const updatePasswordBtn =
+            document.getElementById(
+                "updatePasswordBtn"
             );
 
 
@@ -88,52 +129,56 @@ document.addEventListener(
                 "loginMessage"
             );
 
-
         const signupMessage =
             document.getElementById(
                 "signupMessage"
             );
 
+        const forgotMessage =
+            document.getElementById(
+                "forgotMessage"
+            );
+
+        const resetMessage =
+            document.getElementById(
+                "resetMessage"
+            );
 
 
         /*
         ========================================
-        CHECK EXISTING LOGIN
+        VERIFICATION ELEMENTS
         ========================================
         */
 
-        const {
-            data: {
-                session
-            },
-            error
-        } =
-            await supabase.auth.getSession();
-
-
-        if (error) {
-
-            console.error(
-                "Session error:",
-                error
-            );
-        }
-
-
-        if (session) {
-
-            window.location.replace(
-                "index.html"
+        const verificationPanel =
+            document.getElementById(
+                "verificationPanel"
             );
 
-            return;
-        }
+        const verificationEmail =
+            document.getElementById(
+                "verificationEmail"
+            );
 
+        const resendVerificationBtn =
+            document.getElementById(
+                "resendVerificationBtn"
+            );
+
+        const resendVerificationMessage =
+            document.getElementById(
+                "resendVerificationMessage"
+            );
+
+
+        let pendingVerificationEmail =
+            "";
 
 
         /*
         ========================================
-        LOGIN / SIGNUP SWITCH
+        BUTTONS
         ========================================
         */
 
@@ -142,6 +187,143 @@ document.addEventListener(
                 "showSignupBtn"
             );
 
+        const showLoginBtn =
+            document.getElementById(
+                "showLoginBtn"
+            );
+
+        const forgotPasswordBtn =
+            document.getElementById(
+                "forgotPasswordBtn"
+            );
+
+        const backToLoginBtn =
+            document.getElementById(
+                "backToLoginBtn"
+            );
+
+
+        /*
+        ========================================
+        CHECK PASSWORD RECOVERY
+        ========================================
+        */
+
+        const currentUrl =
+            window.location.href;
+
+
+        const isRecoveryUrl =
+            currentUrl.includes(
+                "type=recovery"
+            ) ||
+            currentUrl.includes(
+                "access_token="
+            );
+
+
+        /*
+        ========================================
+        AUTH STATE CHANGE
+        ========================================
+        */
+
+        supabase.auth.onAuthStateChange(
+            (event, session) => {
+
+                console.log(
+                    "Auth event:",
+                    event
+                );
+
+
+                /*
+                PASSWORD RECOVERY
+                */
+
+                if (
+                    event ===
+                    "PASSWORD_RECOVERY"
+                ) {
+
+                    showResetSection();
+
+                }
+
+            }
+        );
+
+
+        /*
+        ========================================
+        GET SESSION
+        ========================================
+        */
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabase.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+            }
+
+
+            /*
+            IMPORTANT:
+            Do NOT redirect to dashboard
+            during password recovery.
+            */
+
+            if (
+                data?.session &&
+                !isRecoveryUrl
+            ) {
+
+                window.location.replace(
+                    "index.html"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            PASSWORD RESET LINK
+            */
+
+            if (isRecoveryUrl) {
+
+                showResetSection();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Session check error:",
+                error
+            );
+
+        }
+
+
+        /*
+        ========================================
+        LOGIN / SIGNUP SWITCH
+        ========================================
+        */
 
         if (showSignupBtn) {
 
@@ -149,57 +331,67 @@ document.addEventListener(
                 "click",
                 () => {
 
-                    loginSection
-                        .classList
-                        .add("hidden");
-
+                    hideAllSections();
 
                     signupSection
                         .classList
-                        .remove("hidden");
-
+                        .remove(
+                            "hidden"
+                        );
 
                     clearMessages();
 
                 }
             );
+
         }
-
-
-
-        const showLoginBtn =
-            document.getElementById(
-                "showLoginBtn"
-            );
 
 
         if (showLoginBtn) {
 
             showLoginBtn.addEventListener(
                 "click",
-                () => {
-
-                    signupSection
-                        .classList
-                        .add("hidden");
-
-
-                    loginSection
-                        .classList
-                        .remove("hidden");
-
-
-                    clearMessages();
-
-                }
+                showLoginSection
             );
-        }
 
+        }
 
 
         /*
         ========================================
-        PASSWORD EYE
+        FORGOT PASSWORD BUTTON
+        ========================================
+        */
+
+        if (forgotPasswordBtn) {
+
+            forgotPasswordBtn.addEventListener(
+                "click",
+                showForgotSection
+            );
+
+        }
+
+
+        /*
+        ========================================
+        BACK TO LOGIN
+        ========================================
+        */
+
+        if (backToLoginBtn) {
+
+            backToLoginBtn.addEventListener(
+                "click",
+                showLoginSection
+            );
+
+        }
+
+
+        /*
+        ========================================
+        PASSWORD EYE BUTTONS
         ========================================
         */
 
@@ -208,12 +400,20 @@ document.addEventListener(
             "loginPasswordToggle"
         );
 
-
         setupPasswordToggle(
             "signupPassword",
             "signupPasswordToggle"
         );
 
+        setupPasswordToggle(
+            "newPassword",
+            "newPasswordToggle"
+        );
+
+        setupPasswordToggle(
+            "confirmPassword",
+            "confirmPasswordToggle"
+        );
 
 
         /*
@@ -222,11 +422,14 @@ document.addEventListener(
         ========================================
         */
 
-        loginBtn.addEventListener(
-            "click",
-            login
-        );
+        if (loginBtn) {
 
+            loginBtn.addEventListener(
+                "click",
+                login
+            );
+
+        }
 
 
         /*
@@ -235,11 +438,62 @@ document.addEventListener(
         ========================================
         */
 
-        signupBtn.addEventListener(
-            "click",
-            signup
-        );
+        if (signupBtn) {
 
+            signupBtn.addEventListener(
+                "click",
+                signup
+            );
+
+        }
+
+
+        /*
+        ========================================
+        SEND RESET BUTTON
+        ========================================
+        */
+
+        if (sendResetBtn) {
+
+            sendResetBtn.addEventListener(
+                "click",
+                sendResetEmail
+            );
+
+        }
+
+
+        /*
+        ========================================
+        UPDATE PASSWORD BUTTON
+        ========================================
+        */
+
+        if (updatePasswordBtn) {
+
+            updatePasswordBtn.addEventListener(
+                "click",
+                updatePassword
+            );
+
+        }
+
+
+        /*
+        ========================================
+        RESEND VERIFICATION
+        ========================================
+        */
+
+        if (resendVerificationBtn) {
+
+            resendVerificationBtn.addEventListener(
+                "click",
+                resendVerificationEmail
+            );
+
+        }
 
 
         /*
@@ -248,21 +502,25 @@ document.addEventListener(
         ========================================
         */
 
-        loginPassword.addEventListener(
-            "keydown",
-            event => {
+        if (loginPassword) {
 
-                if (
-                    event.key === "Enter"
-                ) {
+            loginPassword.addEventListener(
+                "keydown",
+                event => {
 
-                    login();
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        login();
+
+                    }
 
                 }
+            );
 
-            }
-        );
-
+        }
 
 
         /*
@@ -271,21 +529,79 @@ document.addEventListener(
         ========================================
         */
 
-        signupPassword.addEventListener(
-            "keydown",
-            event => {
+        if (signupPassword) {
 
-                if (
-                    event.key === "Enter"
-                ) {
+            signupPassword.addEventListener(
+                "keydown",
+                event => {
 
-                    signup();
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        signup();
+
+                    }
 
                 }
+            );
 
-            }
-        );
+        }
 
+
+        /*
+        ========================================
+        ENTER KEY - FORGOT EMAIL
+        ========================================
+        */
+
+        if (forgotEmail) {
+
+            forgotEmail.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        sendResetEmail();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+        ========================================
+        ENTER KEY - RESET PASSWORD
+        ========================================
+        */
+
+        if (confirmPassword) {
+
+            confirmPassword.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        updatePassword();
+
+                    }
+
+                }
+            );
+
+        }
 
 
         /*
@@ -301,7 +617,6 @@ document.addEventListener(
 
             const email =
                 loginEmail.value.trim();
-
 
             const password =
                 loginPassword.value;
@@ -334,7 +649,6 @@ document.addEventListener(
             loginBtn.disabled =
                 true;
 
-
             loginBtn.textContent =
                 "Logging in...";
 
@@ -360,14 +674,16 @@ document.addEventListener(
                 if (error) {
 
                     throw error;
+
                 }
 
 
-                if (!data.session) {
+                if (!data?.session) {
 
                     throw new Error(
                         "Login session was not created."
                     );
+
                 }
 
 
@@ -410,14 +726,12 @@ document.addEventListener(
                 loginBtn.disabled =
                     false;
 
-
                 loginBtn.textContent =
                     "Login";
 
             }
 
         }
-
 
 
         /*
@@ -431,13 +745,20 @@ document.addEventListener(
             clearMessages();
 
 
+            if (verificationPanel) {
+
+                verificationPanel.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
             const name =
                 signupName.value.trim();
 
-
             const email =
                 signupEmail.value.trim();
-
 
             const password =
                 signupPassword.value;
@@ -452,6 +773,7 @@ document.addEventListener(
                 );
 
                 return;
+
             }
 
 
@@ -464,6 +786,7 @@ document.addEventListener(
                 );
 
                 return;
+
             }
 
 
@@ -476,31 +799,18 @@ document.addEventListener(
                 );
 
                 return;
+
             }
 
 
             signupBtn.disabled =
                 true;
 
-
             signupBtn.textContent =
                 "Creating Account...";
 
 
             try {
-
-                /*
-                ========================================
-                EMAIL VERIFICATION REDIRECT
-                ========================================
-                */
-
-                const redirectUrl =
-                    new URL(
-                        "auth.html",
-                        window.location.href
-                    ).href;
-
 
                 const {
                     data,
@@ -516,8 +826,13 @@ document.addEventListener(
 
                         options: {
 
+                            /*
+                            ALWAYS use GitHub Pages
+                            for email verification.
+                            */
+
                             emailRedirectTo:
-                                redirectUrl,
+                                AUTH_REDIRECT_URL,
 
                             data: {
 
@@ -534,39 +849,61 @@ document.addEventListener(
                 if (error) {
 
                     throw error;
+
                 }
 
 
-
                 /*
-                ========================================
-                EMAIL VERIFICATION
-                ========================================
+                ====================================
+                EMAIL VERIFICATION REQUIRED
+                ====================================
                 */
 
-                if (!data.session) {
+                if (!data?.session) {
 
-                    showMessage(
-                        signupMessage,
+                    pendingVerificationEmail =
+                        email;
 
-                        "Account created successfully. Please check your email and click the verification link. After verification, return here and login.",
 
-                        "success"
-                    );
+                    if (verificationEmail) {
+
+                        verificationEmail.textContent =
+                            email;
+
+                    }
+
+
+                    if (verificationPanel) {
+
+                        verificationPanel.classList.remove(
+                            "hidden"
+                        );
+
+                    }
 
 
                     signupPassword.value =
                         "";
 
+
+                    showMessage(
+                        signupMessage,
+
+                        "Account created successfully. Please check your email and click the verification link.",
+
+                        "success"
+                    );
+
+
                     return;
+
                 }
 
 
-
                 /*
-                ========================================
+                ====================================
                 EMAIL CONFIRMATION DISABLED
-                ========================================
+                ====================================
                 */
 
                 showMessage(
@@ -610,7 +947,6 @@ document.addEventListener(
                 signupBtn.disabled =
                     false;
 
-
                 signupBtn.textContent =
                     "Create Account";
 
@@ -619,19 +955,517 @@ document.addEventListener(
         }
 
 
+        /*
+        ========================================
+        FORGOT PASSWORD
+        ========================================
+        */
+
+        function showForgotSection() {
+
+            hideAllSections();
+
+            clearMessages();
+
+
+            if (forgotSection) {
+
+                forgotSection.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            /*
+            Automatically copy login email
+            */
+
+            if (
+                loginEmail &&
+                forgotEmail
+            ) {
+
+                forgotEmail.value =
+                    loginEmail.value.trim();
+
+            }
+
+
+            if (forgotEmail) {
+
+                forgotEmail.focus();
+
+            }
+
+        }
+
 
         /*
         ========================================
-        PASSWORD EYE BUTTON
+        SEND PASSWORD RESET EMAIL
         ========================================
-        
-        Hidden:
-        👁
+        */
 
-        Visible:
-        🙈
+        async function sendResetEmail() {
 
-        Only ONE eye button is shown.
+            clearMessages();
+
+
+            const email =
+                forgotEmail.value.trim();
+
+
+            if (!email) {
+
+                showMessage(
+                    forgotMessage,
+                    "Please enter your email.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            sendResetBtn.disabled =
+                true;
+
+            sendResetBtn.textContent =
+                "Sending...";
+
+
+            try {
+
+                /*
+                IMPORTANT:
+                NEVER use localhost here.
+
+                Always redirect to the live
+                GitHub Pages website.
+                */
+
+                const {
+                    error
+                } =
+                    await supabase.auth
+                        .resetPasswordForEmail(
+
+                            email,
+
+                            {
+
+                                redirectTo:
+                                    AUTH_REDIRECT_URL
+
+                            }
+
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showMessage(
+
+                    forgotMessage,
+
+                    "If an account exists with this email, a password reset link has been sent. Check your inbox and spam folder.",
+
+                    "success"
+
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Password reset error:",
+                    error
+                );
+
+
+                showMessage(
+                    forgotMessage,
+                    getErrorMessage(error),
+                    "error"
+                );
+
+
+            } finally {
+
+                sendResetBtn.disabled =
+                    false;
+
+                sendResetBtn.textContent =
+                    "Send Reset Link";
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        SHOW RESET PASSWORD
+        ========================================
+        */
+
+        function showResetSection() {
+
+            hideAllSections();
+
+            clearMessages();
+
+
+            if (resetSection) {
+
+                resetSection.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            if (newPassword) {
+
+                setTimeout(
+                    () => {
+
+                        newPassword.focus();
+
+                    },
+                    100
+                );
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        UPDATE PASSWORD
+        ========================================
+        */
+
+        async function updatePassword() {
+
+            clearMessages();
+
+
+            const password =
+                newPassword.value;
+
+            const confirm =
+                confirmPassword.value;
+
+
+            if (!password) {
+
+                showMessage(
+                    resetMessage,
+                    "Please enter a new password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (password.length < 6) {
+
+                showMessage(
+                    resetMessage,
+                    "Password must contain at least 6 characters.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (password !== confirm) {
+
+                showMessage(
+                    resetMessage,
+                    "Passwords do not match.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            updatePasswordBtn.disabled =
+                true;
+
+            updatePasswordBtn.textContent =
+                "Updating...";
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase.auth
+                        .updateUser({
+
+                            password:
+                                password
+
+                        });
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showMessage(
+
+                    resetMessage,
+
+                    "Password updated successfully. Opening Expense Tracker...",
+
+                    "success"
+
+                );
+
+
+                newPassword.value =
+                    "";
+
+                confirmPassword.value =
+                    "";
+
+
+                setTimeout(
+                    () => {
+
+                        window.location.replace(
+                            "index.html"
+                        );
+
+                    },
+                    1200
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Update password error:",
+                    error
+                );
+
+
+                showMessage(
+                    resetMessage,
+                    getErrorMessage(error),
+                    "error"
+                );
+
+
+            } finally {
+
+                updatePasswordBtn.disabled =
+                    false;
+
+                updatePasswordBtn.textContent =
+                    "Update Password";
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        RESEND VERIFICATION EMAIL
+        ========================================
+        */
+
+        async function resendVerificationEmail() {
+
+            const email =
+                pendingVerificationEmail ||
+                signupEmail.value.trim();
+
+
+            if (!email) {
+
+                showMessage(
+                    resendVerificationMessage,
+                    "Please enter your email.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            resendVerificationBtn.disabled =
+                true;
+
+            resendVerificationBtn.textContent =
+                "Sending...";
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase.auth.resend({
+
+                        type:
+                            "signup",
+
+                        email:
+                            email,
+
+                        options: {
+
+                            emailRedirectTo:
+                                AUTH_REDIRECT_URL
+
+                        }
+
+                    });
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showMessage(
+
+                    resendVerificationMessage,
+
+                    "Verification email sent. Check your inbox and spam folder.",
+
+                    "success"
+
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Resend verification error:",
+                    error
+                );
+
+
+                showMessage(
+                    resendVerificationMessage,
+                    getErrorMessage(error),
+                    "error"
+                );
+
+
+            } finally {
+
+                resendVerificationBtn.disabled =
+                    false;
+
+                resendVerificationBtn.textContent =
+                    "Resend verification email";
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        SHOW LOGIN
+        ========================================
+        */
+
+        function showLoginSection() {
+
+            hideAllSections();
+
+            clearMessages();
+
+
+            if (loginSection) {
+
+                loginSection.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        HIDE ALL SECTIONS
+        ========================================
+        */
+
+        function hideAllSections() {
+
+            if (loginSection) {
+
+                loginSection.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (signupSection) {
+
+                signupSection.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (forgotSection) {
+
+                forgotSection.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (resetSection) {
+
+                resetSection.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        PASSWORD EYE
         ========================================
         */
 
@@ -645,7 +1479,6 @@ document.addEventListener(
                     inputId
                 );
 
-
             const button =
                 document.getElementById(
                     buttonId
@@ -654,20 +1487,10 @@ document.addEventListener(
 
             if (!input || !button) {
 
-                console.warn(
-                    "Password toggle elements not found:",
-                    inputId,
-                    buttonId
-                );
-
                 return;
+
             }
 
-
-            /*
-            Remove any existing button text
-            and set the initial eye.
-            */
 
             button.textContent =
                 "👁";
@@ -694,49 +1517,34 @@ document.addEventListener(
                         "password"
                     ) {
 
-                        /*
-                        SHOW PASSWORD
-                        */
-
                         input.type =
                             "text";
 
-
                         button.textContent =
                             "🙈";
-
 
                         button.setAttribute(
                             "aria-label",
                             "Hide password"
                         );
-
 
                         button.setAttribute(
                             "title",
                             "Hide password"
                         );
 
-
                     } else {
-
-                        /*
-                        HIDE PASSWORD
-                        */
 
                         input.type =
                             "password";
 
-
                         button.textContent =
                             "👁";
-
 
                         button.setAttribute(
                             "aria-label",
                             "Show password"
                         );
-
 
                         button.setAttribute(
                             "title",
@@ -749,7 +1557,6 @@ document.addEventListener(
             );
 
         }
-
 
 
         /*
@@ -772,11 +1579,6 @@ document.addEventListener(
                 message.toLowerCase();
 
 
-
-            /*
-            INVALID LOGIN
-            */
-
             if (
                 lower.includes(
                     "invalid login credentials"
@@ -786,13 +1588,9 @@ document.addEventListener(
                 return (
                     "Incorrect email or password."
                 );
+
             }
 
-
-
-            /*
-            EMAIL NOT CONFIRMED
-            */
 
             if (
                 lower.includes(
@@ -803,13 +1601,9 @@ document.addEventListener(
                 return (
                     "Please verify your email first, then login."
                 );
+
             }
 
-
-
-            /*
-            USER ALREADY EXISTS
-            */
 
             if (
                 lower.includes(
@@ -818,15 +1612,11 @@ document.addEventListener(
             ) {
 
                 return (
-                    "This email is already registered. Please login."
+                    "This email is already registered. Please login or verify your email."
                 );
+
             }
 
-
-
-            /*
-            INVALID API KEY
-            */
 
             if (
                 lower.includes(
@@ -837,13 +1627,9 @@ document.addEventListener(
                 return (
                     "Invalid Supabase API key. Check supabase.js."
                 );
+
             }
 
-
-
-            /*
-            CONFIRMATION EMAIL ERROR
-            */
 
             if (
                 lower.includes(
@@ -854,13 +1640,9 @@ document.addEventListener(
                 return (
                     "The account was not completed because Supabase could not send the confirmation email."
                 );
+
             }
 
-
-
-            /*
-            RATE LIMIT
-            */
 
             if (
                 lower.includes(
@@ -871,13 +1653,35 @@ document.addEventListener(
                 return (
                     "Too many requests. Please wait and try again."
                 );
+
             }
 
 
+            if (
+                lower.includes(
+                    "password recovery"
+                )
+            ) {
 
-            /*
-            DEFAULT ERROR
-            */
+                return (
+                    "This password reset link is invalid or has expired. Please request a new one."
+                );
+
+            }
+
+
+            if (
+                lower.includes(
+                    "expired"
+                )
+            ) {
+
+                return (
+                    "This link has expired. Please request a new password reset link."
+                );
+
+            }
+
 
             return (
                 message ||
@@ -885,7 +1689,6 @@ document.addEventListener(
             );
 
         }
-
 
 
         /*
@@ -901,7 +1704,9 @@ document.addEventListener(
         ) {
 
             if (!element) {
+
                 return;
+
             }
 
 
@@ -915,7 +1720,6 @@ document.addEventListener(
         }
 
 
-
         /*
         ========================================
         CLEAR MESSAGES
@@ -924,24 +1728,39 @@ document.addEventListener(
 
         function clearMessages() {
 
-            if (loginMessage) {
+            const messages = [
 
-                loginMessage.textContent =
-                    "";
+                loginMessage,
 
-                loginMessage.className =
-                    "message";
-            }
+                signupMessage,
+
+                forgotMessage,
+
+                resetMessage,
+
+                resendVerificationMessage
+
+            ];
 
 
-            if (signupMessage) {
+            messages.forEach(
+                element => {
 
-                signupMessage.textContent =
-                    "";
+                    if (!element) {
 
-                signupMessage.className =
-                    "message";
-            }
+                        return;
+
+                    }
+
+
+                    element.textContent =
+                        "";
+
+                    element.className =
+                        "message";
+
+                }
+            );
 
         }
 

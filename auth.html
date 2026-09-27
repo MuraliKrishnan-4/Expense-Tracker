@@ -22,48 +22,38 @@
 
 <body class="auth-page">
 
-
     <main class="auth-container">
 
         <section class="auth-card">
 
-
-            <!-- =========================
-                 APP BRAND
-            ========================== -->
+            <!-- APP LOGO -->
 
             <div class="app-logo">
                 💰
             </div>
 
-
             <h1 class="app-title">
                 Expense Tracker
             </h1>
-
 
             <p class="app-subtitle">
                 Manage your money smarter
             </p>
 
 
-
-            <!-- =========================
-                 LOGIN SECTION
-            ========================== -->
+            <!-- =====================================
+                 LOGIN
+            ====================================== -->
 
             <div id="loginSection">
-
 
                 <h2>
                     Welcome Back
                 </h2>
 
-
                 <p class="form-subtitle">
                     Login to manage your income and expenses
                 </p>
-
 
 
                 <!-- EMAIL -->
@@ -84,7 +74,6 @@
                 </div>
 
 
-
                 <!-- PASSWORD -->
 
                 <div class="form-group">
@@ -92,7 +81,6 @@
                     <label for="loginPassword">
                         Password
                     </label>
-
 
                     <div class="password-wrap">
 
@@ -102,9 +90,6 @@
                             placeholder="Enter your password"
                             autocomplete="current-password"
                         >
-
-
-                        <!-- ONLY ONE EYE BUTTON -->
 
                         <button
                             type="button"
@@ -121,6 +106,16 @@
                 </div>
 
 
+                <!-- FORGOT PASSWORD -->
+
+                <button
+                    type="button"
+                    class="forgot-password-btn"
+                    id="forgotPasswordBtn"
+                >
+                    Forgot Password?
+                </button>
+
 
                 <!-- LOGIN BUTTON -->
 
@@ -133,7 +128,6 @@
                 </button>
 
 
-
                 <!-- LOGIN MESSAGE -->
 
                 <div
@@ -143,8 +137,7 @@
                 ></div>
 
 
-
-                <!-- SWITCH TO SIGNUP -->
+                <!-- CREATE ACCOUNT -->
 
                 <p class="switch-text">
 
@@ -160,33 +153,196 @@
 
                 </p>
 
+            </div>
+
+
+            <!-- =====================================
+                 FORGOT PASSWORD
+            ====================================== -->
+
+            <div
+                id="forgotSection"
+                class="hidden"
+            >
+
+                <h2>
+                    Forgot Password?
+                </h2>
+
+                <p class="form-subtitle">
+                    Enter your email and we'll send you
+                    a password reset link.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label for="forgotEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="forgotEmail"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <button
+                    class="primary-btn"
+                    id="sendResetBtn"
+                    type="button"
+                >
+                    Send Reset Link
+                </button>
+
+
+                <div
+                    id="forgotMessage"
+                    class="message"
+                    aria-live="polite"
+                ></div>
+
+
+                <p class="switch-text">
+
+                    Remember your password?
+
+                    <button
+                        class="link-btn"
+                        id="backToLoginBtn"
+                        type="button"
+                    >
+                        Back to Login
+                    </button>
+
+                </p>
 
             </div>
 
 
+            <!-- =====================================
+                 RESET PASSWORD
+            ====================================== -->
 
-            <!-- =========================
-                 CREATE ACCOUNT SECTION
-            ========================== -->
+            <div
+                id="resetSection"
+                class="hidden"
+            >
+
+                <h2>
+                    Create New Password
+                </h2>
+
+                <p class="form-subtitle">
+                    Enter your new password below.
+                </p>
+
+
+                <!-- NEW PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="newPassword">
+                        New Password
+                    </label>
+
+                    <div class="password-wrap">
+
+                        <input
+                            id="newPassword"
+                            type="password"
+                            placeholder="Minimum 6 characters"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="newPasswordToggle"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <div class="password-wrap">
+
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            placeholder="Enter password again"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="confirmPasswordToggle"
+                            aria-label="Show password"
+                            title="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="primary-btn"
+                    id="updatePasswordBtn"
+                    type="button"
+                >
+                    Update Password
+                </button>
+
+
+                <div
+                    id="resetMessage"
+                    class="message"
+                    aria-live="polite"
+                ></div>
+
+            </div>
+
+
+            <!-- =====================================
+                 SIGNUP
+            ====================================== -->
 
             <div
                 id="signupSection"
                 class="hidden"
             >
 
-
                 <h2>
                     Create Account
                 </h2>
-
 
                 <p class="form-subtitle">
                     Start tracking your income and expenses
                 </p>
 
 
-
-                <!-- FULL NAME -->
+                <!-- NAME -->
 
                 <div class="form-group">
 
@@ -202,7 +358,6 @@
                     >
 
                 </div>
-
 
 
                 <!-- EMAIL -->
@@ -223,7 +378,6 @@
                 </div>
 
 
-
                 <!-- PASSWORD -->
 
                 <div class="form-group">
@@ -231,7 +385,6 @@
                     <label for="signupPassword">
                         Password
                     </label>
-
 
                     <div class="password-wrap">
 
@@ -241,9 +394,6 @@
                             placeholder="Minimum 6 characters"
                             autocomplete="new-password"
                         >
-
-
-                        <!-- ONLY ONE EYE BUTTON -->
 
                         <button
                             type="button"
@@ -260,8 +410,7 @@
                 </div>
 
 
-
-                <!-- CREATE ACCOUNT BUTTON -->
+                <!-- CREATE ACCOUNT -->
 
                 <button
                     class="primary-btn"
@@ -270,7 +419,6 @@
                 >
                     Create Account
                 </button>
-
 
 
                 <!-- SIGNUP MESSAGE -->
@@ -282,8 +430,50 @@
                 ></div>
 
 
+                <!-- =================================
+                     EMAIL VERIFICATION
+                ================================== -->
 
-                <!-- SWITCH TO LOGIN -->
+                <div
+                    id="verificationPanel"
+                    class="verification-panel hidden"
+                >
+
+                    <h3>
+                        Email verification required
+                    </h3>
+
+                    <p>
+                        Your account has been created.
+                        Please check your email and click
+                        the verification link.
+                    </p>
+
+                    <p
+                        id="verificationEmail"
+                        class="verification-email"
+                    ></p>
+
+
+                    <button
+                        class="primary-btn verification-btn"
+                        id="resendVerificationBtn"
+                        type="button"
+                    >
+                        Resend verification email
+                    </button>
+
+
+                    <div
+                        id="resendVerificationMessage"
+                        class="message"
+                        aria-live="polite"
+                    ></div>
+
+                </div>
+
+
+                <!-- LOGIN -->
 
                 <p class="switch-text">
 
@@ -299,40 +489,26 @@
 
                 </p>
 
-
             </div>
-
 
         </section>
 
     </main>
 
 
+    <!-- SUPABASE -->
 
-    <!-- =========================
-         SUPABASE LIBRARY
-    ========================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-
-    <!-- =========================
-         SUPABASE CONFIGURATION
-    ========================== -->
+    <!-- SUPABASE CONFIG -->
 
     <script src="supabase.js"></script>
 
 
-
-    <!-- =========================
-         AUTHENTICATION JAVASCRIPT
-    ========================== -->
+    <!-- AUTH -->
 
     <script src="auth.js"></script>
-
 
 </body>
 

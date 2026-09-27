@@ -628,3 +628,43 @@ body {
     }
 
 }
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+.forgot-password-btn {
+    display: block;
+    width: 100%;
+    margin: -4px 0 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #4f46e5;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    cursor: pointer;
+}
+
+.forgot-password-btn:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   RESET PASSWORD
+========================================= */
+
+#forgotSection,
+#resetSection {
+    width: 100%;
+}
+
+
+/* =========================================
+   HIDDEN
+========================================= */
+
+.hidden {
+    display: none !important;
+}
