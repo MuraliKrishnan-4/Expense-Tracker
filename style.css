@@ -77,18 +77,19 @@ body {
 
 .brand-logo {
     width: 45px;
-
     height: 45px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
-    font-size: 25px;
 }
 
+.brand-logo img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+}
 
 .brand-text h1 {
     font-size: 23px;
