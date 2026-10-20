@@ -2785,117 +2785,84 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-    function downloadStatement() {
-
-        if (
-            !currentStatementTransactions.length
-        ) {
-
-            alert(
-                "There are no transactions to download."
-            );
-
-            return;
-
-        }
-
-        let csv =
-            "Date,Description,Category,Type,Amount\n";
-
-        currentStatementTransactions.forEach(
-            transaction => {
-
-                const descriptionValue =
-                    String(
-                        transaction.description ||
-                        ""
-                    ).replaceAll(
-                        '"',
-                        '""'
-                    );
-
-                // IMPORTANT:
-                // CSV keeps actual database category.
-                const categoryValue =
-                    String(
-                        getTransactionCategory(
-                            transaction
-                        )
-                    ).replaceAll(
-                        '"',
-                        '""'
-                    );
-
-                const transactionType =
-                    String(
-                        transaction.type || ""
-                    ).toLowerCase() ===
-                    "income"
-                        ? "Income"
-                        : "Expense";
-
-                const amountValue =
-                    Number(
-                        transaction.amount
-                    ) || 0;
-
-                csv +=
-                    `"${transaction.date}",` +
-                    `"${descriptionValue}",` +
-                    `"${categoryValue}",` +
-                    `"${transactionType}",` +
-                    `"${amountValue.toFixed(
-                        2
-                    )}"\n`;
-
-            }
-        );
-
-        const blob =
-            new Blob(
-                [csv],
-                {
-                    type:
-                        "text/csv;charset=utf-8;"
-                }
-            );
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        const link =
-            document.createElement("a");
-
-        link.href =
-            url;
-
-        link.download =
-            (
-                currentStatementTitle ||
-                "Statement"
-            )
-                .replaceAll(" ", "_")
-                .replaceAll("(", "")
-                .replaceAll(")", "") +
-            ".csv";
-
-        document.body.appendChild(
-            link
-        );
-
-        link.click();
-
-        document.body.removeChild(
-            link
-        );
-
-        URL.revokeObjectURL(
-            url
-        );
-
+ 
+function downloadStatement() {
+    if (!Array.isArray(currentStatementTransactions) || currentStatementTransactions.length === 0) {
+        alert("There are no transactions to download.");
+        return;
     }
+
+    const csvEscape = value => {
+        const text = String(value ?? "");
+        return '"' + text.replace(/"/g, '""') + '"';
+    };
+
+    const rows = [
+        ["Date", "Description", "Category", "Type", "Amount"]
+    ];
+
+    currentStatementTransactions.forEach(transaction => {
+        const transactionType =
+            String(transaction.type || "").toLowerCase() === "income"
+                ? "Income"
+                : "Expense";
+
+        rows.push([
+            transaction.date || "",
+            transaction.description || "",
+            getTransactionCategory(transaction),
+            transactionType,
+            (Number(transaction.amount) || 0).toFixed(2)
+        ]);
+    });
+
+    const csv = "\uFEFF" + rows
+        .map(row => row.map(csvEscape).join(","))
+        .join("\r\n");
+
+    const safeTitle = String(currentStatementTitle || "Statement")
+        .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+        .trim()
+        .replace(/\s+/g, "_") || "Statement";
+    const fileName = safeTitle + ".csv";
+
+    // Android WebView: a native bridge is required to save Blob/CSV data.
+    const isAndroidWebView = /; wv\)|Android.*Version\//i.test(navigator.userAgent || "");
+    if (window.AndroidDownload && typeof window.AndroidDownload.saveFile === "function") {
+        try {
+            const encodedCSV = btoa(unescape(encodeURIComponent(csv)));
+            window.AndroidDownload.saveFile(encodedCSV, fileName, "text/csv");
+        } catch (error) {
+            console.error("Statement download failed:", error);
+            alert("Could not save the statement. Please try again.");
+        }
+        return;
+    }
+
+    if (isAndroidWebView) {
+        console.error("AndroidDownload bridge is not registered in MainActivity.kt.");
+        alert("Download is not connected in the Android app. Please add the AndroidDownload bridge in MainActivity.kt.");
+        return;
+    }
+
+    // Normal website browser download.
+    try {
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+        console.error("Statement download failed:", error);
+        alert("Could not download the statement.");
+    }
+}
+
 
     // =========================================================
     // REFRESH

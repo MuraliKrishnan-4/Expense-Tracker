@@ -1659,3 +1659,112 @@ tbody tr:hover {
 .chart-legend-text span {
     font-size: 14px;
 }
+/* Fix page scrolling on mobile and embedded WebView */
+html {
+    min-height: 100%;
+    overflow-y: auto;
+}
+
+body {
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ========================================
+   app 
+   ======================================== */
+
+
+/* App promotion: information left, download button right */
+
+.app-download-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 24px;
+    margin: 24px 0;
+    background: #fffaf5;
+    border-radius: 18px;
+}
+
+.app-download-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.app-download-logo {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 12px;
+}
+
+.app-download-info h2 {
+    margin: 0 0 6px;
+    color: #172554;
+    font-size: 20px;
+}
+
+.app-download-info p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.app-download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 17px 26px;
+    background: #510026;
+    color: #ffe600 !important;
+    border: 1px solid #7a1745;
+    border-radius: 50px;
+    box-shadow: 0 8px 18px rgba(81, 0, 38, 0.2);
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none !important;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.app-download-card > small {
+    flex-basis: 100%;
+    color: #64748b;
+    font-size: 12px;
+    margin-top: -10px;
+}
+
+/* Mobile layout */
+@media (max-width: 650px) {
+    .app-download-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .app-download-info {
+        flex: 1 1 auto;
+    }
+
+    .app-download-button {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 17px;
+        padding: 15px 12px;
+    }
+
+    .app-download-card > small {
+        margin-top: -8px;
+    }
+}
